@@ -150,7 +150,7 @@ ParamMHMMR <- setRefClass(
         sk <- t(z) %*% z
         if (modelMHMMR$variance_type == variance_types$homoskedastic) {
           s <- (s + sk)
-          sigma <<- s / modelMHMMR$m
+          sigma <<- s / modelMHMMR$n
         }
         else{
           sigma[, , k] <<- sk / nk + lambda * diag(x = 1, modelMHMMR$m)
@@ -166,7 +166,7 @@ ParamMHMMR <- function(modelMHMMR) {
   trans_mat <- matrix(NA, modelMHMMR$K, modelMHMMR$K)
   beta <- array(NA, dim = c(modelMHMMR$p + 1, modelMHMMR$m, modelMHMMR$K))
   if (modelMHMMR$variance_type == variance_types$homoskedastic) {
-    sigma <- matrix(NA)
+    sigma <- matrix(NA, modelMHMMR$m, modelMHMMR$m)
   }
   else{
     sigma <- array(NA, dim = c(modelMHMMR$m, modelMHMMR$m, modelMHMMR$K))

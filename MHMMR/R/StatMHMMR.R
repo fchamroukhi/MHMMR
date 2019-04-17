@@ -113,8 +113,9 @@ StatMHMMR <- setRefClass(
       for (k in 1:modelMHMMR$K) {
         mk <- phi %*% paramMHMMR$beta[, , k] # the regressors means
         muk[, , k] <- mk
+
         if (modelMHMMR$variance_type == variance_types$homoskedastic) {
-          sk <- paramMHMMR$sigma[1]
+          sk <- paramMHMMR$sigma
         }
         else{
           sk <- paramMHMMR$sigma[, , k]

@@ -72,4 +72,4 @@ verbose <- TRUE
 
 solution <- EM(modelMHMMR, n_tries, max_iter, threshold, verbose)
 
-# solution$plot()
+solution$plot()
