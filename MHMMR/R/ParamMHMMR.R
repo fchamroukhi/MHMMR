@@ -1,6 +1,8 @@
 source("R/enums.R")
 source("R/mk_stochastic.R")
 
+library(MASS)
+
 ParamMHMMR <- setRefClass(
   "ParamMHMMR",
   fields = list(
@@ -142,7 +144,11 @@ ParamMHMMR <- setRefClass(
 
         # Regression coefficients
         lambda <- 1e-5 # If a bayesian prior on the beta's
-        bk <- (solve(t(Xk) %*% Xk + lambda * diag(modelMHMMR$p + 1)) %*% t(Xk)) %*% yk
+
+
+        # bk <- (solve(t(Xk) %*% Xk + lambda * diag(modelMHMMR$p + 1)) %*% t(Xk)) %*% yk
+        bk <- (ginv(t(Xk) %*% Xk) %*% t(Xk)) %*% yk
+
         beta[, , k] <<- bk
 
         # Variance(s)
