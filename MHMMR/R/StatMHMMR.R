@@ -1,4 +1,7 @@
-source("R/forwards_backwards.R")
+library(Rcpp)
+Rcpp::sourceCpp("src/forwards_backwards.cpp")
+
+# source("R/forwards_backwards.R")
 source("R/hmm_process.R")
 
 StatMHMMR <- setRefClass(
@@ -45,7 +48,7 @@ StatMHMMR <- setRefClass(
     # # compute loglikelihood
     # #######
     computeLikelihood = function(paramMHMMR) {
-      fb <- forwards_backwards(paramMHMMR$prior, paramMHMMR$trans_mat, f_tk)
+      fb <- forwards_backwards(paramMHMMR$prior, paramMHMMR$trans_mat, t(f_tk))
       loglik <<- fb$loglik
 
     },
@@ -132,11 +135,12 @@ StatMHMMR <- setRefClass(
 
       f_tk <<- exp(log_f_tk)
 
-      fb <- forwards_backwards(paramMHMMR$prior, paramMHMMR$trans_mat, f_tk)
-      tau_tk <<- fb$tau_tk
+      fb <- forwards_backwards(paramMHMMR$prior, paramMHMMR$trans_mat, t(f_tk))
+
+      tau_tk <<- t(fb$tau_tk)
       xi_tkl <<- fb$xi_tkl
-      alpha_tk <<- fb$alpha_tk
-      beta_tk <<- fb$beta_tk
+      alpha_tk <<- t(fb$alpha_tk)
+      beta_tk <<- t(fb$beta_tk)
       loglik <<- fb$loglik
 
     }
@@ -148,7 +152,7 @@ StatMHMMR <- function(modelMHMMR) {
   tau_tk <- matrix(NA, modelMHMMR$n, modelMHMMR$K) # tau_tk: smoothing probs: [nxK], tau_tk(t,k) = Pr(z_i=k | y1...yn)
   alpha_tk <- matrix(NA, modelMHMMR$n, ncol = modelMHMMR$K) # alpha_tk: [nxK], forwards probs: Pr(y1...yt,zt=k)
   beta_tk <- matrix(NA, modelMHMMR$n, modelMHMMR$K) # beta_tk: [nxK], backwards probs: Pr(yt+1...yn|zt=k)
-  xi_tkl <- array(NA, c(modelMHMMR$n - 1, modelMHMMR$K, modelMHMMR$K)) # xi_tkl: [(n-1)xKxK], joint post probs : xi_tk\elll(t,k,\ell)  = Pr(z_t=k, z_{t-1}=\ell | Y) t =2,..,n
+  xi_tkl <- array(NA, c(modelMHMMR$K, modelMHMMR$K, modelMHMMR$n - 1)) # xi_tkl: [(n-1)xKxK], joint post probs : xi_tk\elll(t,k,\ell)  = Pr(z_t=k, z_{t-1}=\ell | Y) t =2,..,n
   f_tk <- matrix(NA, modelMHMMR$n, modelMHMMR$K) # f_tk: [nxK] f(yt|zt=k)
   log_f_tk <- matrix(NA, modelMHMMR$n, modelMHMMR$K) # log_f_tk: [nxK] log(f(yt|zt=k))
   loglik <- -Inf # loglik: log-likelihood at convergence
