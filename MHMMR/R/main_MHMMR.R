@@ -45,10 +45,21 @@ source("R/ModelMHMMR.R")
 source("R/ModelLearner.R")
 
 # Building matrices for regression
+
+# Toy multivariate time series with regime changes
+# Y = cbind(c(rnorm(100, mean = 0), rnorm(120, mean = 7), rnorm(200, mean = 4), rnorm(100, mean = -1), rnorm(150, mean = 3.5)),
+#            c(rnorm(100, mean = 1), rnorm(120, mean = 5), rnorm(200, mean = 6), rnorm(100, mean = -2), rnorm(150, mean = 2)),
+#            c(rnorm(100, mean = -2), rnorm(120, mean = 10), rnorm(200, mean = 8), rnorm(100, mean = 0), rnorm(150, mean = 5)))
+# X = matrix(seq(from = 0, to = 1, length.out = nrow(Y)), nrow = 1)
+
+# Toy time series with regime changes
 load("data/simulatedTimeSeries.RData")
+
+# Some real time series with regime changes
+load("data/realTimeSeries.RData")
+
 fData <- FData$new()
 fData$setData(X, Y)
-
 
 
 K <- 5 # Number of regimes (states)
@@ -61,14 +72,6 @@ n_tries <- 1
 max_iter <- 1500
 threshold <- 1e-6
 verbose <- TRUE
-
-# toy multivariate time series with regime changes
-# y = [[randn(100,1); 7+randn(120,1);4+randn(200,1); -1+randn(100,1); 3.5+randn(150,1)] ...
-#     [1+randn(100,1); 5+randn(120,1);6+randn(200,1); -2+randn(100,1); 2+randn(150,1)] ...
-#     [-2+randn(100,1); 10+randn(120,1);8+randn(200,1); randn(100,1); 5+randn(150,1)]]
-# n = length(y);
-# x = linspace(0,1,n);
-#
 
 solution <- EM(modelMHMMR, n_tries, max_iter, threshold, verbose)
 
