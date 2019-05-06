@@ -8,6 +8,9 @@ FittedMHMMR <- setRefClass(
   methods = list(
     plot = function() {
 
+      oldpar <- par()[c("mfrow", "mai", "mgp")]
+      on.exit(par(oldpar), add = TRUE)
+
       yaxislim <- c(min(modelMHMMR$Y) - 2 * mean(sqrt(apply(modelMHMMR$Y, 2, var))), max(modelMHMMR$Y) + 2 * mean(sqrt(apply(modelMHMMR$Y, 2, var))))
 
       # Predicted time series and predicted regime probabilities
