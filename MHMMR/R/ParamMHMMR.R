@@ -61,7 +61,7 @@ ParamMHMMR <- setRefClass(
 
     },
 
-    init_mhmmr_regressors = function (phi, modelMHMMR, try_algo = 1) {
+    init_mhmmr_regressors = function(phi, modelMHMMR, try_algo = 1) {
 
       if (try_algo == 1) { # Uniform segmentation into K contiguous segments, and then a regression
 
@@ -85,7 +85,7 @@ ParamMHMMR <- setRefClass(
           }
         }
       }
-      else{ # Random segmentation into contiguous segments, and then a regression
+      else{# Random segmentation into contiguous segments, and then a regression
 
         Lmin <- modelMHMMR$p + 1 + 1 # Minimum length of a segment
         tk_init <- rep(0, modelMHMMR$K)

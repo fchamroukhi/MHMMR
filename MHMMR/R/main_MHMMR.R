@@ -38,7 +38,7 @@
 # (c) Faicel Chamroukhi (since 2010).
 ###########################################################################
 
-rm(list=ls())
+rm(list = ls())
 source("R/enums.R")
 source("R/FData.R")
 source("R/ModelMHMMR.R")
