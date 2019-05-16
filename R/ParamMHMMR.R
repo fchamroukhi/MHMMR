@@ -1,8 +1,4 @@
-source("R/enums.R")
-source("R/mk_stochastic.R")
-
-library(MASS)
-
+#' @importFrom MASS ginv
 ParamMHMMR <- setRefClass(
   "ParamMHMMR",
   fields = list(

@@ -17,13 +17,13 @@ FData <- setRefClass(
   methods = list(
     # set Data from a file
     setData = function(X, Y) {
-      Y <<- Y
+      Y <<- as.matrix(Y)
       setDataProperties()
       if (n == 1) {
         Y <<- t(Y)
       }
 
-      X <<- X
+      X <<- as.matrix(X)
 
     },
 

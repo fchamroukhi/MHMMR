@@ -14,14 +14,12 @@ using namespace Rcpp;
 //   http://gallery.rcpp.org/
 //
 
-// [[Rcpp::export]]
 arma::colvec normalizeColVec(arma::colvec v) {
   double z = sum(v);
   double s = z + (z == 0);
   return v / s;
 }
 
-// [[Rcpp::export]]
 arma::mat normalizeMat(arma::mat M) {
   double z = sum(sum(M));
   double s = z + (z == 0);
@@ -29,7 +27,7 @@ arma::mat normalizeMat(arma::mat M) {
 }
 
 // [[Rcpp::export]]
-List forwards_backwards(arma::vec prior, arma::mat transmat, arma::mat f_tk) {
+List forwards_backwards(arma::vec& prior, arma::mat& transmat, arma::mat& f_tk) {
   // [tau_tk, xi_ikl, alpha, beta, loglik] = forwards_backwards(prior, transmat, fik, filter_only)
   // forwards_backwards : calculates the E-step of the EM algorithm for an HMM
   // (Gaussian HMM)
@@ -93,15 +91,6 @@ List forwards_backwards(arma::vec prior, arma::mat transmat, arma::mat f_tk) {
 
   }
 
-  List ret;
-  ret["tau_tk"] = tau_tk;
-  ret["xi_tkl"] = xi_tkl;
-  ret["alpha_tk"] = alpha_tk;
-  ret["beta_tk"] = beta_tk;
-  ret["loglik"] = loglik;
-  return ret;
+  return List::create(Named("tau_tk") = tau_tk, Named("xi_tkl") = xi_tkl, Named("alpha_tk") = alpha_tk, Named("beta_tk") = beta_tk, Named("loglik") = loglik);
+
 }
-
-
-/*** R
-*/

@@ -1,9 +1,3 @@
-source("R/enums.R")
-source("R/utils.R")
-source("R/ParamMHMMR.R")
-source("R/StatMHMMR.R")
-source("R/FittedMHMMR.R")
-
 EM <- function(modelMHMMR, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbose = FALSE) {
   # learn_mhmmr learn a Regression model with a Hidden Markov Process (MHMMR)
   # for modeling and segmentation of a time series with regime changes.

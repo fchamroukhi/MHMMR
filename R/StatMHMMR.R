@@ -1,9 +1,3 @@
-library(Rcpp)
-Rcpp::sourceCpp("src/forwards_backwards.cpp")
-
-# source("R/forwards_backwards.R")
-source("R/hmm_process.R")
-
 StatMHMMR <- setRefClass(
   "StatMHMMR",
   fields = list(

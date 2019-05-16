@@ -1,5 +1,3 @@
-source("R/FData.R")
-
 designmatrix = function(x, p, q = NULL, n = 1) {
 
   order_max <- p

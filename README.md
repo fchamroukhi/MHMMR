@@ -3,11 +3,8 @@ MHMMR
 R code for the segmentation of multivariate time series with a Multiple Hidden Markov Model Regression (MHMMR).
 
 
- Multiple Hidden Markov Model Regression (HMMR) for the segmentation of multivariate time series
- with regime changes. The model assumes that the time series is
- governed by a sequence of hidden discrete regimes/states, where each
- regime/state has multivariate Gaussian regressors emission densities.
- The model parameters are estimated by MLE via the EM algorithm
+ Multiple Hidden Markov Model Regression (HMMR) for the segmentation of multivariate time series with regime changes. The model assumes that the time series is governed by a sequence of hidden discrete regimes/states, where each regime/state has multivariate Gaussian regressors emission densities.
+The model parameters are estimated by MLE via the EM algorithm
 
 
  *Please cite the following papers for this code:*
@@ -35,4 +32,4 @@ R code for the segmentation of multivariate time series with a Multiple Hidden M
   	Month = {to appear},
   	url =  {https://chamroukhi.com/papers/MBCC-FDA.pdf}
  }
-``` 
+```
