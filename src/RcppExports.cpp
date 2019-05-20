@@ -6,22 +6,22 @@
 
 using namespace Rcpp;
 
-// forwards_backwards
-List forwards_backwards(arma::vec& prior, arma::mat& transmat, arma::mat& f_tk);
-RcppExport SEXP _MHMMR_forwards_backwards(SEXP priorSEXP, SEXP transmatSEXP, SEXP f_tkSEXP) {
+// forwardsBackwards
+List forwardsBackwards(arma::vec& prior, arma::mat& transmat, arma::mat& f_tk);
+RcppExport SEXP _MHMMR_forwardsBackwards(SEXP priorSEXP, SEXP transmatSEXP, SEXP f_tkSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::vec& >::type prior(priorSEXP);
     Rcpp::traits::input_parameter< arma::mat& >::type transmat(transmatSEXP);
     Rcpp::traits::input_parameter< arma::mat& >::type f_tk(f_tkSEXP);
-    rcpp_result_gen = Rcpp::wrap(forwards_backwards(prior, transmat, f_tk));
+    rcpp_result_gen = Rcpp::wrap(forwardsBackwards(prior, transmat, f_tk));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_MHMMR_forwards_backwards", (DL_FUNC) &_MHMMR_forwards_backwards, 3},
+    {"_MHMMR_forwardsBackwards", (DL_FUNC) &_MHMMR_forwardsBackwards, 3},
     {NULL, NULL, 0}
 };
 

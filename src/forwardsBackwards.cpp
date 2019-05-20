@@ -27,9 +27,9 @@ arma::mat normalizeMat(arma::mat M) {
 }
 
 // [[Rcpp::export]]
-List forwards_backwards(arma::vec& prior, arma::mat& transmat, arma::mat& f_tk) {
-  // [tau_tk, xi_ikl, alpha, beta, loglik] = forwards_backwards(prior, transmat, fik, filter_only)
-  // forwards_backwards : calculates the E-step of the EM algorithm for an HMM
+List forwardsBackwards(arma::vec& prior, arma::mat& transmat, arma::mat& f_tk) {
+  // [tau_tk, xi_ikl, alpha, beta, loglik] = forwardsBackwards(prior, transmat, fik, filter_only)
+  // forwardsBackwards : calculates the E-step of the EM algorithm for an HMM
   // (Gaussian HMM)
 
   // Inputs :
