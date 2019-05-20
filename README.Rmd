@@ -1,0 +1,70 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center",
+  fig.path = "man/figures/README-"
+)
+```
+## Overview
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+Multiple Hidden Markov Model Regression (HMMR) for the **segmentation** of multivariate time series with regime changes.
+
+The model assumes that the time series is governed by a sequence of hidden discrete regimes/states, where each regime/state has multivariate Gaussian regressors emission densities. The model parameters are estimated by MLE via the EM algorithm.
+
+## Installation
+
+You can install the development version of MHMMR from [GitHub](https://github.com/) with:
+
+```{r, eval = FALSE}
+# install.packages("devtools")
+devtools::install_github("fchamroukhi/MHMMR")
+```
+
+To build *vignettes* for examples of usage, type the command below instead:
+
+```{r, eval = FALSE}
+# install.packages("devtools")
+devtools::install_github("fchamroukhi/MHMMR", 
+                         build_opts = c("--no-resave-data", "--no-manual"), 
+                         build_vignettes = TRUE)
+```
+
+Use the following command to display vignettes:
+
+```{r, eval = FALSE}
+browseVignettes("MHMMR")
+```
+
+## Usage
+
+```{r, message = FALSE}
+library(MHMMR)
+
+data("simulatedtimeseries")
+fData <- FData$new()
+fData$setData(t(simulatedtimeseries$X), simulatedtimeseries[, 2:ncol(simulatedtimeseries)])
+
+K <- 5 # Number of regimes (states)
+p <- 3 # Dimension of beta (order of the polynomial regressors)
+variance_type <- variance_types$hetereskedastic
+modelMHMMR <- ModelMHMMR(fData, K, p, variance_type)
+
+n_tries <- 1
+max_iter <- 1500
+threshold <- 1e-6
+verbose <- TRUE
+
+solution <- EM(modelMHMMR, n_tries, max_iter, threshold, verbose)
+
+solution$plot()
+```

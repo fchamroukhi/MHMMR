@@ -1,0 +1,37 @@
+citHeader("To cite MHMMR in publications use:")
+
+citEntry(
+  entry = "Article",
+  title = "An unsupervised approach for automatic activity recognition based on Hidden
+          Markov Model Regression",
+  author = personList(person(given="D.", family="Trabelsi"),
+                      person(given="S.", family="Mohammed"),
+                      person(given="F.", family="Chamroukhi"),
+                      person(given="L.", family="Oukhellou"),
+                      person(given="Y.", family="Amirat")),
+  journal = "IEEE Transactions on Automation Science and Engineering",
+  year = "2013",
+  volume = "3",
+  number = "10",
+  pages = "829--335",
+  url = "https://chamroukhi.com/papers/Chamroukhi-MHMMR-IeeeTase.pdf",
+  textVersion = "Trabelsi D, Mohammed S, Chamroukhi F, Oukhellou L, Amirat Y (2013).
+  \u201cAn unsupervised approach for automatic activity recognition based on Hidden Markov
+  Model Regression.\u201d _IEEE Transactions on Automation Science and Engineering_, *3*(10),
+  829-335. <URL: https://chamroukhi.com/papers/Chamroukhi-MHMMR-IeeeTase.pdf>."
+)
+
+citEntry(
+  entry = "Article",
+  title = "Model-Based Clustering and Classification of Functional Data",
+  author = personList(person(given="F.", family="Chamroukhi"),
+                      person(given="Hien D.", family="Nguyen")),
+  journal = "Wiley Interdisciplinary Reviews: Data Mining and Knowledge Discovery",
+  year = "2019",
+  url = "https://chamroukhi.com/papers/MBCC-FDA.pdf",
+  doi = "https://doi.org/10.1002/widm.1298",
+  textVersion = "Chamroukhi F, Nguyen H (2019). \u201cModel-Based Clustering and Classification
+  of Functional Data.\u201d _Wiley Interdisciplinary Reviews: Data Mining and Knowledge
+  Discovery_. doi: 10.1002/widm.1298 (URL: https://doi.org/10.1002/widm.1298),
+  <URL: https://chamroukhi.com/papers/MBCC-FDA.pdf>."
+)
