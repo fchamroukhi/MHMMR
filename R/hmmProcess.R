@@ -1,5 +1,5 @@
-hmm_process <- function(prior, trans_mat, n) {
-  # hmm_process calculates the distribution p(z_1,...,z_n;pi,A) of a markov chain (z_1,...z_n)
+hmmProcess <- function(prior, trans_mat, n) {
+  # hmmProcess calculates the distribution p(z_1,...,z_n;pi,A) of a markov chain (z_1,...z_n)
   # with prior prob \pi and transition matrix A
   #
   #

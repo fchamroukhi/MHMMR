@@ -13,8 +13,8 @@ Collate:
     RcppExports.R
     enums.R
     utils.R
-    mk_stochastic.R
-    hmm_process.R
+    mkStochastic.R
+    hmmProcess.R
     FData.R
     ModelMHMMR.R
     ParamMHMMR.R

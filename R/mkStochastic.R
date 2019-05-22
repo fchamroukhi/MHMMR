@@ -1,6 +1,6 @@
-mk_stochastic <- function(M) {
-  # MK_STOCHASTIC Ensure the argument is a stochastic matrix, i.e., the sum over the last dimension is 1.
-  # M = mk_stochastic(M)
+mkStochastic <- function(M) {
+  # mkStochastic Ensure the argument is a stochastic matrix, i.e., the sum over the last dimension is 1.
+  # M = mkStochastic(M)
   #
   # If M is a vector, it will sum to 1.
   # If M is a matrix, each row will sum to 1.
