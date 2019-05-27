@@ -38,8 +38,7 @@ See `help(package="MHMMR")` for further details and references provided by `cita
 
 ```{r}
 data("simulatedtimeseries")
-fData <- FData$new()
-fData$setData(simulatedtimeseries$X, simulatedtimeseries[, 2:ncol(simulatedtimeseries)])
+fData <- FData(simulatedtimeseries$X, simulatedtimeseries[, 2:ncol(simulatedtimeseries)])
 ```
 
 # Set up MHMMR model parameters
