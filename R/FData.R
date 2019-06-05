@@ -5,9 +5,9 @@
 #' ordered by time (functional time series). In the last case, the field `X`
 #' represents the time.
 #'
-#' @field X Numeric vector of length \emph{m}.
-#' @field Y Matrix of size \eqn{(n, m)} representing \emph{n}
-#' functions of `X` observed at points \eqn{1,\dots,m}.
+#' @field X numeric vector of length \emph{m}.
+#' @field Y matrix of size \emph{\eqn{n x m}} representing \emph{n} functions
+#' of `X` observed at points \eqn{1,\dots,m}.
 #' @export
 FData <- setRefClass(
   "FData",
@@ -17,23 +17,21 @@ FData <- setRefClass(
     m = "numeric",
     n = "numeric",
     vecY = "matrix"
-  ),
-  methods = list(
-
-    initialize = function(X = numeric(1), Y = matrix(1)) {
-
-      X <<- X
-      Y <<- as.matrix(Y)
-
-      n <<- nrow(Y)
-      m <<- ncol(Y)
-
-      vecY <<- matrix(t(Y), ncol = 1)
-
-      if (n == 1) {
-        Y <<- t(Y)
-      }
-
-    }
   )
 )
+
+FData <- function(X, Y) {
+
+  Y <- as.matrix(Y)
+
+  n <- nrow(Y)
+  m <- ncol(Y)
+
+  vecY <- matrix(t(Y), ncol = 1)
+
+  if (n == 1) {
+    Y <- t(Y)
+  }
+
+  fData <- new("FData", X = X, Y = Y, m = m, n = n, vecY = vecY)
+}
