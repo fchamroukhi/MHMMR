@@ -1,7 +1,16 @@
 #' @importFrom MASS ginv
+#' @export
 ParamMHMMR <- setRefClass(
   "ParamMHMMR",
   fields = list(
+    fData = "FData",
+    phi = "matrix",
+
+    K = "numeric", # Number of regimes
+    p = "numeric", # Dimension of beta (order of polynomial regression)
+    variance_type = "numeric",
+    nu = "numeric", # Degree of freedom
+
     prior = "matrix",
     trans_mat = "matrix",
     beta = "array",
@@ -9,8 +18,39 @@ ParamMHMMR <- setRefClass(
     mask = "matrix"
   ),
   methods = list(
-    init_mhmmr = function(modelMHMMR, phi, try_algo = 1) {
-      # function mhmmr =  init_mhmmr(X, y, K, type_variance, EM_try)
+
+    initialize = function(fData = FData(numeric(1), matrix(1)), K = 2, p = 2, variance_type = 1) {
+
+      fData <<- fData
+
+      phi <<- designmatrix(x = fData$X, p = p)$XBeta
+
+      K <<- K
+      p <<- p
+      variance_type <<- variance_type
+
+      if (variance_type == variance_types$homoskedastic) {
+        nu <<- K - 1 + K * (K - 1) + K * (p + 1) * fData$m + fData$m * (fData$m + 1) / 2
+      }
+      else{
+        nu <<- K - 1 + K * (K - 1) + K * (p + 1) * fData$m + K * fData$m * (fData$m + 1) / 2
+      }
+
+      prior <<- matrix(NA, ncol = K - 1)
+      trans_mat <<- matrix(NA, K, K)
+      beta <<- array(NA, dim = c(p + 1, fData$m, K))
+      if (variance_type == variance_types$homoskedastic) {
+        sigma <<- matrix(NA, fData$m, fData$m)
+      }
+      else{
+        sigma <<- array(NA, dim = c(fData$m, fData$m, K))
+      }
+      mask <<- matrix(NA, K, K)
+
+    },
+
+    initMhmmr = function(try_algo = 1) {
+      # function mhmmr =  initMhmmr(X, y, K, type_variance, EM_try)
       # init_mhmmr initialize the parameters of a Multivriate Hidden Markov Model
       # Regression (MHMMR) model
       #
@@ -34,15 +74,14 @@ ParamMHMMR <- setRefClass(
       #         and some stats: like the the posterior probs, the loglikelihood,
       #         etc
       #
-      # Faicel Chamroukhi, first version in November 2008
       ################################################################################
 
       # Initialization taking into account the constraint:
 
       # Initialization of the transition matrix
-      maskM <- 0.5 * diag(modelMHMMR$K) # mask of order 1
+      maskM <- 0.5 * diag(K) # Mask of order 1
 
-      for (k in 1:(modelMHMMR$K - 1)) {
+      for (k in 1:(K - 1)) {
         ind <- which(maskM[k, ] != 0)
         maskM[k, ind + 1] <- 0.5
       }
@@ -50,31 +89,31 @@ ParamMHMMR <- setRefClass(
       mask <<- maskM
 
       # Initialization of the initial distribution
-      prior <<- matrix(c(1, rep(0, modelMHMMR$K - 1)))
+      prior <<- matrix(c(1, rep(0, K - 1)))
 
       # Initialization of regression coefficients and variances
-      init_mhmmr_regressors(phi, modelMHMMR, try_algo)
+      initMhmmrRegressors(try_algo)
 
     },
 
-    init_mhmmr_regressors = function(phi, modelMHMMR, try_algo = 1) {
+    initMhmmrRegressors = function(try_algo = 1) {
 
       if (try_algo == 1) { # Uniform segmentation into K contiguous segments, and then a regression
 
-        zi <- round(modelMHMMR$n / modelMHMMR$K) - 1
+        zi <- round(fData$n / K) - 1
 
         s <- 0 # If homoskedastic
-        for (k in 1:modelMHMMR$K) {
-          yk <- modelMHMMR$Y[((k - 1) * zi + 1):(k * zi), ]
+        for (k in 1:K) {
+          yk <- fData$Y[((k - 1) * zi + 1):(k * zi), ]
           Xk <- as.matrix(phi[((k - 1) * zi + 1):(k * zi), ])
 
-          beta[, , k] <<- solve(t(Xk) %*% Xk + (10 ^ -4) * diag(modelMHMMR$p + 1)) %*% t(Xk) %*% yk # regress(yk,Xk); # for a use in octave, where regress doesnt exist
+          beta[, , k] <<- solve(t(Xk) %*% Xk + (10 ^ -4) * diag(p + 1)) %*% t(Xk) %*% yk # regress(yk,Xk); # for a use in octave, where regress doesnt exist
 
           muk <- Xk %*% beta[, , k]
           sk <- t(yk - muk) %*% (yk - muk)
-          if (modelMHMMR$variance_type == variance_types$homoskedastic) {
+          if (variance_type == variance_types$homoskedastic) {
             s <- (s + sk)
-            sigma <<- s / modelMHMMR$n
+            sigma <<- s / fData$n
           }
           else {
             sigma[, , k] <<- sk / length(yk)
@@ -83,32 +122,32 @@ ParamMHMMR <- setRefClass(
       }
       else{# Random segmentation into contiguous segments, and then a regression
 
-        Lmin <- modelMHMMR$p + 1 + 1 # Minimum length of a segment
-        tk_init <- rep(0, modelMHMMR$K)
+        Lmin <- p + 1 + 1 # Minimum length of a segment
+        tk_init <- rep(0, K)
         tk_init <- t(tk_init)
         tk_init[1] <- 0
-        K_1 <- modelMHMMR$K
-        for (k in 2:modelMHMMR$K) {
+        K_1 <- K
+        for (k in 2:K) {
           K_1 <- K_1 - 1
-          temp <- seq(tk_init[k - 1] + Lmin, modelMHMMR$n - K_1 * Lmin)
+          temp <- seq(tk_init[k - 1] + Lmin, fData$n - K_1 * Lmin)
           ind <- sample(1:length(temp), length(temp))
           tk_init[k] <- temp[ind[1]]
         }
-        tk_init[K + 1] <- modelMHMMR$n
+        tk_init[K + 1] <- fData$n
 
         s <- 0
-        for (k in 1:modelMHMMR$K) {
+        for (k in 1:K) {
           i <- tk_init[k] + 1
           j <- tk_init[k + 1]
-          yk <- modelMHMMR$Y[i:j, ]
+          yk <- fData$Y[i:j, ]
           Xk <- phi[i:j, ]
-          beta[, , k] <<- solve(t(Xk) %*% Xk + 1e-4 * diag(modelMHMMR$p + 1)) %*% t(Xk) %*% yk #regress(yk,Xk); # for a use in octave, where regress doesnt exist
+          beta[, , k] <<- solve(t(Xk) %*% Xk + 1e-4 * diag(p + 1)) %*% t(Xk) %*% yk #regress(yk,Xk); # for a use in octave, where regress doesnt exist
           muk <- Xk %*% beta[, , k]
           sk <- t(yk - muk) %*% (yk - muk)
 
-          if (modelMHMMR$variance_type == variance_types$homoskedastic) {
+          if (variance_type == variance_types$homoskedastic) {
             s <- s + sk
-            sigma[1] <<- s / modelMHMMR$n
+            sigma[1] <<- s / fData$n
 
           }
           else{
@@ -118,7 +157,7 @@ ParamMHMMR <- setRefClass(
       }
     },
 
-    MStep = function(modelMHMMR, statMHMMR, phi) {
+    MStep = function(statMHMMR) {
       # Updates of the Markov chain parameters
       # Initial states prob: P(Z_1 = k)
       prior <<- matrix(normalize(statMHMMR$tau_tk[1, ])$M)
@@ -131,48 +170,34 @@ ParamMHMMR <- setRefClass(
       # Update of the regressors (reg coefficients betak and the variance(s) sigma2k)
 
       s <- 0 # If homoskedastic
-      for (k in 1:modelMHMMR$K) {
+      for (k in 1:K) {
         weights <- statMHMMR$tau_tk[, k]
 
         nk <- sum(weights) # Expected cardinal number of state k
-        Xk <- phi * (sqrt(weights) %*% matrix(1, 1, modelMHMMR$p + 1)) # [n*(p+1)]
-        yk <- modelMHMMR$Y * (sqrt(weights) %*% ones(1, modelMHMMR$m)) # dimension :(nxd).*(nxd) = (nxd)
+        Xk <- phi * (sqrt(weights) %*% matrix(1, 1, p + 1)) # [n*(p+1)]
+        yk <- fData$Y * (sqrt(weights) %*% ones(1, fData$m)) # dimension :(nxd).*(nxd) = (nxd)
 
         # Regression coefficients
         lambda <- 1e-5 # If a bayesian prior on the beta's
 
 
-        # bk <- (solve(t(Xk) %*% Xk + lambda * diag(modelMHMMR$p + 1)) %*% t(Xk)) %*% yk
+        # bk <- (solve(t(Xk) %*% Xk + lambda * diag(p + 1)) %*% t(Xk)) %*% yk
         bk <- (ginv(t(Xk) %*% Xk) %*% t(Xk)) %*% yk
 
         beta[, , k] <<- bk
 
         # Variance(s)
-        z <- (modelMHMMR$Y - phi %*% bk) * (sqrt(weights) %*% ones(1, modelMHMMR$m))
+        z <- (fData$Y - phi %*% bk) * (sqrt(weights) %*% ones(1, fData$m))
         sk <- t(z) %*% z
-        if (modelMHMMR$variance_type == variance_types$homoskedastic) {
+        if (variance_type == variance_types$homoskedastic) {
           s <- (s + sk)
-          sigma <<- s / modelMHMMR$n
+          sigma <<- s / fData$n
         }
         else{
-          sigma[, , k] <<- sk / nk + lambda * diag(x = 1, modelMHMMR$m)
+          sigma[, , k] <<- sk / nk + lambda * diag(x = 1, fData$m)
         }
       }
 
     }
   )
 )
-
-ParamMHMMR <- function(modelMHMMR) {
-  prior <- matrix(NA, ncol = modelMHMMR$K - 1)
-  trans_mat <- matrix(NA, modelMHMMR$K, modelMHMMR$K)
-  beta <- array(NA, dim = c(modelMHMMR$p + 1, modelMHMMR$m, modelMHMMR$K))
-  if (modelMHMMR$variance_type == variance_types$homoskedastic) {
-    sigma <- matrix(NA, modelMHMMR$m, modelMHMMR$m)
-  }
-  else{
-    sigma <- array(NA, dim = c(modelMHMMR$m, modelMHMMR$m, modelMHMMR$K))
-  }
-  mask <- matrix(NA, modelMHMMR$K, modelMHMMR$K)
-  new("ParamMHMMR", prior = prior, trans_mat = trans_mat, beta = beta, sigma = sigma, mask = mask)
-}

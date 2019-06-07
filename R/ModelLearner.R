@@ -1,4 +1,5 @@
-EM <- function(modelMHMMR, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbose = FALSE) {
+#' @export
+emMHMMR <- function(X, Y, K, p, variance_type = 2, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbose = FALSE) {
   # learn_mhmmr learn a Regression model with a Hidden Markov Process (MHMMR)
   # for modeling and segmentation of a time series with regime changes.
   # The learning is performed by the EM (Baum-Welch) algorithm.
@@ -49,7 +50,6 @@ EM <- function(modelMHMMR, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbo
   #           smoothed: [nx1]
   #
   #
-  #Faicel Chamroukhi, sept 2008
   #
   ## Please cite the following papers for this code:
   #
@@ -79,7 +79,7 @@ EM <- function(modelMHMMR, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbo
   #
   ##########################################################################################
 
-  phi <- designmatrix(x = modelMHMMR$X, p = modelMHMMR$p)$XBeta
+  fData <- FData$new(X, Y)
 
   nb_good_try <- 0
   total_nb_try <- 0
@@ -96,24 +96,24 @@ EM <- function(modelMHMMR, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbo
 
     ## EM Initializaiton step
     ## Initialization of the Markov chain params, the regression coeffs, and the variance(s)
-    param <- ParamMHMMR(modelMHMMR)
-    param$init_mhmmr(modelMHMMR, phi, nb_good_try + 1)
+    param <- ParamMHMMR$new(fData = fData, K = K, p = p, variance_type = variance_type)
+    param$initMhmmr(nb_good_try + 1)
 
     iter <- 0
     prev_loglik <- -Inf
     converged <- FALSE
     top <- 0
 
-    stat <- StatMHMMR(modelMHMMR)
+    stat <- StatMHMMR$new(paramMHMMR = param)
 
     while ((iter <= max_iter) && !converged) {
 
       ## E step : calculate tge tau_tk (p(Zt=k|y1...ym;theta)) and xi t_kl (and the log-likelihood) by
       #  forwards backwards (computes the alpha_tk et beta_tk)
-      stat$EStep(modelMHMMR, param, phi)
+      stat$EStep(param)
 
       ## M step
-      param$MStep(modelMHMMR, stat, phi)
+      param$MStep(stat)
 
       ## End of an EM iteration
 
@@ -179,7 +179,7 @@ EM <- function(modelMHMMR, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbo
   statSolution$MAP()
 
   # FINISH computation of statSolution
-  statSolution$computeStats(modelMHMMR, paramSolution, phi, cputime_total)
+  statSolution$computeStats(paramSolution, cputime_total)
 
-  return(FittedMHMMR(modelMHMMR, paramSolution, statSolution))
+  return(ModelMHMMR(paramMHMMR = paramSolution, statMHMMR = statSolution))
 }
