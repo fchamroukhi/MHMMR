@@ -46,10 +46,10 @@ zeros <- function(n, d, g = 1) {
 
 rand <- function(n, d, g = 1) {
   if (g == 1) {
-    return(matrix(runif(n * d), n, d))
+    return(matrix(stats::runif(n * d), n, d))
   }
   else{
-    return(array(runif(n * d), dim = c(n, d, g)))
+    return(array(stats::runif(n * d), dim = c(n, d, g)))
   }
 }
 
@@ -60,7 +60,7 @@ repmat <- function(M, n, d) {
 drnorm <- function(n, d, mean, sd) {
   A <- matrix(nrow = n, ncol = d)
   for (i in 1:d) {
-    A[, i] <- rnorm(n, mean, sd)
+    A[, i] <- stats::rnorm(n, mean, sd)
   }
   return(A)
 }
