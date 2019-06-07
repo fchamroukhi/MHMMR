@@ -132,10 +132,10 @@ StatMHMMR <- setRefClass(
         muk[, , k] <- mk
 
         if (paramMHMMR$variance_type == variance_types$homoskedastic) {
-          sk <- paramMHMMR$sigma
+          sk <- paramMHMMR$sigma2
         }
         else{
-          sk <- paramMHMMR$sigma[, , k]
+          sk <- paramMHMMR$sigma2[, , k]
         }
         z <- (paramMHMMR$fData$Y - mk) %*% solve(sk) * (paramMHMMR$fData$Y - mk)
         mahalanobis <- rowSums(z)
