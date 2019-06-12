@@ -1,16 +1,30 @@
-Package: MHMMR
 Type: Package
-Title: What the Package Does (Title Case)
+Package: MHMMR
+Title: Multiple Hidden Markov Model Regression (MHMMR) for Joint Segmentation of Multivariate Time Series
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Authors@R: c(person("Faicel", "Chamroukhi", role = c("aut"),
+    email = "faicel.chamroukhi@unicaen.fr",
+    comment = c(ORCID = "0000-0002-5894-3103")),
+    person("Marius", "Bartcus", role = c("aut")),
+    person("Florian", "Lecocq", role = c("aut", "cre"),
+    email = "florian.lecocq@outlook.com"))
+Description: Flexible and user-friendly probabilistic joint segmentation of time series with 
+    regime changes by a multiple regression model governed by a hidden Markov process, fitted 
+    by the Baum-Welch (EM) algorithm. See also the packages 'HMMR' and 'MRHLP'.
 License: What license is it under?
 Depends: 
     R (>= 2.10)
-Encoding: UTF-8
-LazyData: true
+Imports: 
+    methods,
+    stats,
+    MASS,
+    Rcpp
+Suggests: 
+    knitr,
+    rmarkdown
+LinkingTo: 
+    Rcpp,
+    RcppArmadillo
 Collate:
     MHMMR-package.R
     RcppExports.R
@@ -23,17 +37,8 @@ Collate:
     StatMHMMR.R
     ModelMHMMR.R
     ModelLearner.R
+VignetteBuilder: knitr
+Encoding: UTF-8
+LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1
-LinkingTo: 
-    Rcpp,
-    RcppArmadillo
-Imports: 
-    methods,
-    stats,
-    MASS,
-    Rcpp
-Suggests: 
-    knitr,
-    rmarkdown
-VignetteBuilder: knitr
