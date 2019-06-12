@@ -8,7 +8,7 @@ citEntry(
   journal = "Wiley Interdisciplinary Reviews: Data Mining and Knowledge Discovery",
   year = "2019",
   url = "https://chamroukhi.com/papers/MBCC-FDA.pdf",
-  doi = "https://doi.org/10.1002/widm.1298",
+  doi = "10.1002/widm.1298",
   textVersion = "Chamroukhi F, Nguyen H (2019). \u201cModel-Based Clustering and
   Classification of Functional Data.\u201d Wiley Interdisciplinary Reviews: Data
   Mining and Knowledge Discovery. doi: 10.1002/widm.1298
