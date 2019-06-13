@@ -87,6 +87,73 @@ ModelMHMMR <- setRefClass(
       # Probablities of the hidden process (segmentation)
       plot.default(paramMHMMR$fData$X, statMHMMR$klas, type = "l", xlab = "x", ylab = "Estimated class labels", col = "red", lwd = 1.5, yaxt = "n")
       axis(side = 2, at = 1:paramMHMMR$K)
+    },
+
+    summary = function() {
+
+      digits = getOption("digits")
+
+      title <- paste("Fitted MHMMR model")
+      txt <- paste(rep("-", min(nchar(title) + 4, getOption("width"))), collapse = "")
+
+      # Title
+      cat(txt)
+      cat("\n")
+      cat(title)
+      cat("\n")
+      cat(txt)
+
+      cat("\n")
+      cat("\n")
+      cat(paste0("MHMMR model with K = ", paramMHMMR$K, ifelse(paramMHMMR$K > 1, " regimes", " regime")))
+      cat("\n")
+      cat("\n")
+
+      tab <- data.frame("log-likelihood" = statMHMMR$loglik, "nu" = paramMHMMR$nu, "AIC" = statMHMMR$AIC,
+                        "BIC" = statMHMMR$BIC, row.names = "", check.names = FALSE)
+      print(tab, digits = digits)
+
+      cat("\nClustering table:")
+      print(table(statMHMMR$klas))
+
+      cat("\n\n")
+
+      txt <- paste(rep("-", min(nchar(title), getOption("width"))), collapse = "")
+
+      for (k in 1:paramMHMMR$K) {
+        cat(txt)
+        cat("\nRegime ", k, " (K = ", k, "):\n", sep = "")
+
+        cat("\nRegression coefficients:\n\n")
+        if (paramMHMMR$p > 0) {
+          row.names = c("1", sapply(1:paramMHMMR$p, function(x) paste0("X^", x)))
+        } else {
+          row.names = "1"
+        }
+
+        betas <- data.frame(paramMHMMR$beta[, , k], row.names = row.names)
+        colnames(betas) <- sapply(1:paramMHMMR$fData$m, function(x) paste0("Beta(d = ", x, ")"))
+        print(betas, digits = digits)
+
+        if (paramMHMMR$variance_type == variance_types$heteroskedastic) {
+          cat("\nCovariance matrix:\n")
+          sigma2 <- data.frame(paramMHMMR$sigma2[, , k])
+          colnames(sigma2) <- NULL
+          print(sigma2, digits = digits, row.names = FALSE)
+        }
+      }
+
+      if (paramMHMMR$variance_type == variance_types$homoskedastic) {
+        cat("\n")
+        txt <- paste(rep("-", min(nchar(title), getOption("width"))), collapse = "")
+        cat(txt)
+        cat("\nCommon covariance matrix:\n")
+        cat(txt)
+        sigma2 <- data.frame(paramMHMMR$sigma2)
+        colnames(sigma2) <- NULL
+        print(sigma2, digits = digits, row.names = FALSE)
+      }
+
     }
   )
 )
