@@ -8,7 +8,7 @@ ParamMHMMR <- setRefClass(
 
     K = "numeric", # Number of regimes
     p = "numeric", # Dimension of beta (order of polynomial regression)
-    variance_type = "numeric",
+    variance_type = "character",
     nu = "numeric", # Degree of freedom
 
     prior = "matrix",
@@ -19,7 +19,7 @@ ParamMHMMR <- setRefClass(
   ),
   methods = list(
 
-    initialize = function(fData = FData(numeric(1), matrix(1)), K = 2, p = 2, variance_type = 1) {
+    initialize = function(fData = FData(numeric(1), matrix(1)), K = 2, p = 3, variance_type = "heteroskedastic") {
 
       fData <<- fData
 
@@ -29,7 +29,7 @@ ParamMHMMR <- setRefClass(
       p <<- p
       variance_type <<- variance_type
 
-      if (variance_type == variance_types$homoskedastic) {
+      if (variance_type == "homoskedastic") {
         nu <<- K - 1 + K * (K - 1) + K * (p + 1) * fData$m + fData$m * (fData$m + 1) / 2
       }
       else{
@@ -39,7 +39,7 @@ ParamMHMMR <- setRefClass(
       prior <<- matrix(NA, ncol = K - 1)
       trans_mat <<- matrix(NA, K, K)
       beta <<- array(NA, dim = c(p + 1, fData$m, K))
-      if (variance_type == variance_types$homoskedastic) {
+      if (variance_type == "homoskedastic") {
         sigma2 <<- matrix(NA, fData$m, fData$m)
       }
       else{
@@ -111,7 +111,7 @@ ParamMHMMR <- setRefClass(
 
           muk <- Xk %*% beta[, , k]
           sk <- t(yk - muk) %*% (yk - muk)
-          if (variance_type == variance_types$homoskedastic) {
+          if (variance_type == "homoskedastic") {
             s <- (s + sk)
             sigma2 <<- s / fData$n
           }
@@ -145,7 +145,7 @@ ParamMHMMR <- setRefClass(
           muk <- Xk %*% beta[, , k]
           sk <- t(yk - muk) %*% (yk - muk)
 
-          if (variance_type == variance_types$homoskedastic) {
+          if (variance_type == "homoskedastic") {
             s <- s + sk
             sigma2[1] <<- s / fData$n
 
@@ -189,7 +189,7 @@ ParamMHMMR <- setRefClass(
         # Variance(s)
         z <- (fData$Y - phi %*% bk) * (sqrt(weights) %*% ones(1, fData$m))
         sk <- t(z) %*% z
-        if (variance_type == variance_types$homoskedastic) {
+        if (variance_type == "homoskedastic") {
           s <- (s + sk)
           sigma2 <<- s / fData$n
         }

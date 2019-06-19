@@ -1,5 +1,5 @@
 #' @export
-emMHMMR <- function(X, Y, K, p, variance_type = 2, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbose = FALSE) {
+emMHMMR <- function(X, Y, K, p, variance_type = c("heteroskedastic", "homoskedastic"), n_tries = 1, max_iter = 1500, threshold = 1e-6, verbose = FALSE) {
   # learn_mhmmr learn a Regression model with a Hidden Markov Process (MHMMR)
   # for modeling and segmentation of a time series with regime changes.
   # The learning is performed by the EM (Baum-Welch) algorithm.
@@ -96,6 +96,7 @@ emMHMMR <- function(X, Y, K, p, variance_type = 2, n_tries = 1, max_iter = 1500,
 
     ## EM Initializaiton step
     ## Initialization of the Markov chain params, the regression coeffs, and the variance(s)
+    variance_type <- match.arg(variance_type)
     param <- ParamMHMMR$new(fData = fData, K = K, p = p, variance_type = variance_type)
     param$initMhmmr(nb_good_try + 1)
 

@@ -31,7 +31,7 @@ library(MHMMR)
 
 # Introduction
 
-**MHMMR** is a contributed R package for segmentation. It provides functions for parameter estimation via the EM algorithm. This document gives a quick tour of **MHMMR** (version `r packageVersion("MHMMR")`) functionalities. It was written in R Markdown, using the [knitr](https://cran.r-project.org/package=knitr) package for production. 
+**MHMMR** is a R package for segmentation. It provides functions for parameter estimation via the EM algorithm. This document gives a quick tour of **MHMMR** (version `r packageVersion("MHMMR")`) functionalities. It was written in R Markdown, using the [knitr](https://cran.r-project.org/package=knitr) package for production. 
 See `help(package="MHMMR")` for further details and references provided by `citation("MHMMR")`.
 
 # Load data
@@ -45,7 +45,7 @@ data("simulatedtimeseries")
 ```{r}
 K <- 5 # Number of regimes (states)
 p <- 3 # Dimension of beta (order of the polynomial regressors)
-variance_type <- variance_types$heteroskedastic
+variance_type <- "heteroskedastic" # "heteroskedastic" or "homoskedastic" model
 ```
 
 # Set up EM parameters
@@ -60,17 +60,18 @@ verbose <- TRUE
 # Estimation
 
 ```{r}
-solution <- emMHMMR(simulatedtimeseries$X, simulatedtimeseries[, 2:ncol(simulatedtimeseries)], K, p, variance_type, n_tries, max_iter, threshold, verbose)
+mhmmr <- emMHMMR(simulatedtimeseries$X, simulatedtimeseries[, 2:ncol(simulatedtimeseries)], 
+                    K, p, variance_type, n_tries, max_iter, threshold, verbose)
 ```
 
 # Summary
 
 ```{r}
-solution$summary()
+mhmmr$summary()
 ```
 
 # Plots
 
 ```{r}
-solution$plot()
+mhmmr$plot()
 ```

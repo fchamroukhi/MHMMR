@@ -135,7 +135,7 @@ ModelMHMMR <- setRefClass(
         colnames(betas) <- sapply(1:paramMHMMR$fData$m, function(x) paste0("Beta(d = ", x, ")"))
         print(betas, digits = digits)
 
-        if (paramMHMMR$variance_type == variance_types$heteroskedastic) {
+        if (paramMHMMR$variance_type == "heteroskedastic") {
           cat("\nCovariance matrix:\n")
           sigma2 <- data.frame(paramMHMMR$sigma2[, , k])
           colnames(sigma2) <- NULL
@@ -143,7 +143,7 @@ ModelMHMMR <- setRefClass(
         }
       }
 
-      if (paramMHMMR$variance_type == variance_types$homoskedastic) {
+      if (paramMHMMR$variance_type == "homoskedastic") {
         cat("\n")
         txt <- paste(rep("-", min(nchar(title), getOption("width"))), collapse = "")
         cat(txt)

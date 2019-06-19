@@ -26,7 +26,7 @@ StatMHMMR <- setRefClass(
   ),
   methods = list(
 
-    initialize = function(paramMHMMR = ParamMHMMR(fData = FData(numeric(1), matrix(1)), K = 2, p = 2, variance_type = 1)) {
+    initialize = function(paramMHMMR = ParamMHMMR()) {
 
       tau_tk <<- matrix(NA, paramMHMMR$fData$n, paramMHMMR$K) # tau_tk: smoothing probs: [nxK], tau_tk(t,k) = Pr(z_i=k | y1...yn)
       alpha_tk <<- matrix(NA, paramMHMMR$fData$n, ncol = paramMHMMR$K) # alpha_tk: [nxK], forwards probs: Pr(y1...yt,zt=k)
@@ -131,7 +131,7 @@ StatMHMMR <- setRefClass(
         mk <- paramMHMMR$phi %*% paramMHMMR$beta[, , k] # The regressors means
         muk[, , k] <- mk
 
-        if (paramMHMMR$variance_type == variance_types$homoskedastic) {
+        if (paramMHMMR$variance_type == "homoskedastic") {
           sk <- paramMHMMR$sigma2
         }
         else{
