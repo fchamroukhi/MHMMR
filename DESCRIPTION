@@ -32,7 +32,7 @@ Collate:
     utils.R
     mkStochastic.R
     hmmProcess.R
-    FData.R
+    MData.R
     ParamMHMMR.R
     StatMHMMR.R
     ModelMHMMR.R

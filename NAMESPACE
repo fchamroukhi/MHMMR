@@ -2,7 +2,7 @@
 
 export(emMHMMR)
 export(selectMHMMR)
-exportClasses(FData)
+exportClasses(MData)
 exportClasses(ModelMHMMR)
 exportClasses(ParamMHMMR)
 exportClasses(StatMHMMR)

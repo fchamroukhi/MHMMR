@@ -79,7 +79,10 @@ emMHMMR <- function(X, Y, K, p, variance_type = c("heteroskedastic", "homoskedas
   #
   ##########################################################################################
 
-  fData <- FData$new(X, Y)
+  if (is.vector(Y)) { # Univariate time series
+    Y <- as.matrix(Y)
+  }
+  mData <- MData$new(X, Y)
 
   nb_good_try <- 0
   total_nb_try <- 0
@@ -99,7 +102,7 @@ emMHMMR <- function(X, Y, K, p, variance_type = c("heteroskedastic", "homoskedas
     ## EM Initializaiton step
     ## Initialization of the Markov chain params, the regression coeffs, and the variance(s)
     variance_type <- match.arg(variance_type)
-    param <- ParamMHMMR$new(fData = fData, K = K, p = p, variance_type = variance_type)
+    param <- ParamMHMMR$new(mData = mData, K = K, p = p, variance_type = variance_type)
     param$initMhmmr(nb_good_try + 1)
 
     iter <- 0

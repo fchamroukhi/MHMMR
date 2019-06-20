@@ -3,7 +3,7 @@
 ParamMHMMR <- setRefClass(
   "ParamMHMMR",
   fields = list(
-    fData = "FData",
+    mData = "MData",
     phi = "matrix",
 
     K = "numeric", # Number of regimes
@@ -19,31 +19,31 @@ ParamMHMMR <- setRefClass(
   ),
   methods = list(
 
-    initialize = function(fData = FData(numeric(1), matrix(1)), K = 2, p = 3, variance_type = "heteroskedastic") {
+    initialize = function(mData = MData(numeric(1), matrix(1)), K = 2, p = 3, variance_type = "heteroskedastic") {
 
-      fData <<- fData
+      mData <<- mData
 
-      phi <<- designmatrix(x = fData$X, p = p)$XBeta
+      phi <<- designmatrix(x = mData$X, p = p)$XBeta
 
       K <<- K
       p <<- p
       variance_type <<- variance_type
 
       if (variance_type == "homoskedastic") {
-        nu <<- K - 1 + K * (K - 1) + K * (p + 1) * fData$m + fData$m * (fData$m + 1) / 2
+        nu <<- K - 1 + K * (K - 1) + K * (p + 1) * mData$d + mData$d * (mData$d + 1) / 2
       }
       else{
-        nu <<- K - 1 + K * (K - 1) + K * (p + 1) * fData$m + K * fData$m * (fData$m + 1) / 2
+        nu <<- K - 1 + K * (K - 1) + K * (p + 1) * mData$d + K * mData$d * (mData$d + 1) / 2
       }
 
       prior <<- matrix(NA, ncol = K - 1)
       trans_mat <<- matrix(NA, K, K)
-      beta <<- array(NA, dim = c(p + 1, fData$m, K))
+      beta <<- array(NA, dim = c(p + 1, mData$d, K))
       if (variance_type == "homoskedastic") {
-        sigma2 <<- matrix(NA, fData$m, fData$m)
+        sigma2 <<- matrix(NA, mData$d, mData$d)
       }
       else{
-        sigma2 <<- array(NA, dim = c(fData$m, fData$m, K))
+        sigma2 <<- array(NA, dim = c(mData$d, mData$d, K))
       }
       mask <<- matrix(NA, K, K)
 
@@ -100,11 +100,11 @@ ParamMHMMR <- setRefClass(
 
       if (try_algo == 1) { # Uniform segmentation into K contiguous segments, and then a regression
 
-        zi <- round(fData$n / K) - 1
+        zi <- round(mData$m / K) - 1
 
         s <- 0 # If homoskedastic
         for (k in 1:K) {
-          yk <- fData$Y[((k - 1) * zi + 1):(k * zi), ]
+          yk <- mData$Y[((k - 1) * zi + 1):(k * zi), ]
           Xk <- as.matrix(phi[((k - 1) * zi + 1):(k * zi), ])
 
           beta[, , k] <<- solve(t(Xk) %*% Xk + (10 ^ -4) * diag(p + 1)) %*% t(Xk) %*% yk # regress(yk,Xk); # for a use in octave, where regress doesnt exist
@@ -113,7 +113,7 @@ ParamMHMMR <- setRefClass(
           sk <- t(yk - muk) %*% (yk - muk)
           if (variance_type == "homoskedastic") {
             s <- (s + sk)
-            sigma2 <<- s / fData$n
+            sigma2 <<- s / mData$m
           }
           else {
             sigma2[, , k] <<- sk / length(yk)
@@ -129,17 +129,17 @@ ParamMHMMR <- setRefClass(
         K_1 <- K
         for (k in 2:K) {
           K_1 <- K_1 - 1
-          temp <- seq(tk_init[k - 1] + Lmin, fData$n - K_1 * Lmin)
+          temp <- seq(tk_init[k - 1] + Lmin, mData$m - K_1 * Lmin)
           ind <- sample(1:length(temp), length(temp))
           tk_init[k] <- temp[ind[1]]
         }
-        tk_init[K + 1] <- fData$n
+        tk_init[K + 1] <- mData$m
 
         s <- 0
         for (k in 1:K) {
           i <- tk_init[k] + 1
           j <- tk_init[k + 1]
-          yk <- fData$Y[i:j, ]
+          yk <- mData$Y[i:j, ]
           Xk <- phi[i:j, ]
           beta[, , k] <<- solve(t(Xk) %*% Xk + 1e-4 * diag(p + 1)) %*% t(Xk) %*% yk #regress(yk,Xk); # for a use in octave, where regress doesnt exist
           muk <- Xk %*% beta[, , k]
@@ -147,7 +147,7 @@ ParamMHMMR <- setRefClass(
 
           if (variance_type == "homoskedastic") {
             s <- s + sk
-            sigma2[1] <<- s / fData$n
+            sigma2[1] <<- s / mData$m
 
           }
           else{
@@ -175,7 +175,7 @@ ParamMHMMR <- setRefClass(
 
         nk <- sum(weights) # Expected cardinal number of state k
         Xk <- phi * (sqrt(weights) %*% matrix(1, 1, p + 1)) # [n*(p+1)]
-        yk <- fData$Y * (sqrt(weights) %*% ones(1, fData$m)) # dimension :(nxd).*(nxd) = (nxd)
+        yk <- mData$Y * (sqrt(weights) %*% ones(1, mData$d)) # dimension :(nxd).*(nxd) = (nxd)
 
         # Regression coefficients
         lambda <- 1e-5 # If a bayesian prior on the beta's
@@ -187,14 +187,14 @@ ParamMHMMR <- setRefClass(
         beta[, , k] <<- bk
 
         # Variance(s)
-        z <- (fData$Y - phi %*% bk) * (sqrt(weights) %*% ones(1, fData$m))
+        z <- (mData$Y - phi %*% bk) * (sqrt(weights) %*% ones(1, mData$d))
         sk <- t(z) %*% z
         if (variance_type == "homoskedastic") {
           s <- (s + sk)
-          sigma2 <<- s / fData$n
+          sigma2 <<- s / mData$m
         }
         else{
-          sigma2[, , k] <<- sk / nk + lambda * diag(x = 1, fData$m)
+          sigma2[, , k] <<- sk / nk + lambda * diag(x = 1, mData$d)
         }
       }
 
