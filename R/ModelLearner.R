@@ -90,7 +90,9 @@ emMHMMR <- function(X, Y, K, p, variance_type = c("heteroskedastic", "homoskedas
     start_time <- Sys.time()
 
     if (n_tries > 1) {
-      print(paste("EM try n?", (nb_good_try + 1)))
+      if (verbose) {
+        cat(paste0("EM try number: ", nb_good_try + 1, "\n\n"))
+      }
     }
     total_nb_try <- total_nb_try + 1
 
@@ -125,13 +127,13 @@ emMHMMR <- function(X, Y, K, p, variance_type = c("heteroskedastic", "homoskedas
       stat$loglik <- stat$loglik + log(lambda)
 
       if (verbose) {
-        print(paste('HMM_regression | EM   : Iteration :', iter, ' Log-likelihood : ', stat$loglik))
+        cat(paste0("EM: Iteration : ", iter, " || log-likelihood : "  , stat$loglik, "\n"))
       }
 
       if ((prev_loglik - stat$loglik) > 1e-4) {
         top <- top + 1
         if (top == 10) {
-          stop(print(paste('!!!!! The loglikelihood is decreasing from', prev_loglik, ' to ', stat$loglik)))
+          stop(paste0("EM log-likelihood is decreasing from ", prev_loglik, "to ", stat$loglik, " !"))
         }
       }
 
@@ -150,7 +152,9 @@ emMHMMR <- function(X, Y, K, p, variance_type = c("heteroskedastic", "homoskedas
     # at this point we have computed param and stat that contains all the information
 
     if (n_tries > 1) {
-      print(paste('loglik_max = ', stat$loglik))
+      if (verbose) {
+        cat(paste0("Max value of the log-likelihood: ", stat$loglik, "\n"))
+      }
     }
 
     if (length(param$beta) != 0) {
@@ -173,7 +177,9 @@ emMHMMR <- function(X, Y, K, p, variance_type = c("heteroskedastic", "homoskedas
   }
 
   if (n_tries > 1) {
-    print(paste('best_loglik:  ', statSolution$loglik))
+    if (verbose) {
+      cat(paste0("Best value of the log-likelihood: ", statSolution$loglik, "\n"))
+    }
   }
 
   # Smoothing state sequences : argmax(smoothing probs), and corresponding binary allocations partition

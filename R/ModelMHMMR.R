@@ -138,11 +138,12 @@ ModelMHMMR <- setRefClass(
         cat("\nRegression coefficients:\n\n")
         if (paramMHMMR$p > 0) {
           row.names = c("1", sapply(1:paramMHMMR$p, function(x) paste0("X^", x)))
+          betas <- data.frame(paramMHMMR$beta[, , k], row.names = row.names)
         } else {
           row.names = "1"
+          betas <- data.frame(t(paramMHMMR$beta[, , k]), row.names = row.names)
         }
 
-        betas <- data.frame(paramMHMMR$beta[, , k], row.names = row.names)
         colnames(betas) <- sapply(1:paramMHMMR$fData$m, function(x) paste0("Beta(d = ", x, ")"))
         print(betas, digits = digits)
 

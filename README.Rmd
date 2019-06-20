@@ -64,5 +64,7 @@ verbose <- TRUE
 mhmmr <- emMHMMR(simulatedtimeseries$X, simulatedtimeseries[, 2:ncol(simulatedtimeseries)],
                  K, p, variance_type, n_tries, max_iter, threshold, verbose)
 
+mhmmr$summary()
+
 mhmmr$plot()
 ```

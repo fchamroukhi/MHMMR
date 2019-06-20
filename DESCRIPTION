@@ -37,6 +37,7 @@ Collate:
     StatMHMMR.R
     ModelMHMMR.R
     ModelLearner.R
+    ModelSelection.R
 VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true
