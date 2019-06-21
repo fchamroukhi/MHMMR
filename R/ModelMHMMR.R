@@ -24,13 +24,15 @@ ModelMHMMR <- setRefClass(
         title(main = "Original and predicted HMMR time series")
 
         for (d in 1:paramMHMMR$mData$d) {
-            lines(paramMHMMR$mData$X, statMHMMR$predicted[, d], col = "red", lwd = 1.5)
+          lines(paramMHMMR$mData$X, statMHMMR$predicted[, d], col = "red", lwd = 1.5)
         }
 
         # Prediction probabilities of the hidden process (segmentation)
         plot.default(paramMHMMR$mData$X, statMHMMR$predict_prob[, 1], type = "l", xlab = "x", ylab = expression('P(Z'[t] == k ~ '|' ~ list(y[1],..., y[t - 1]) ~ ')'), col = colorsvec[1], lwd = 1.5, main = "Prediction probabilities", ylim = c(0, 1))
-        for (k in 2:paramMHMMR$K) {
-          lines(paramMHMMR$mData$X, statMHMMR$predict_prob[, k], col = colorsvec[k], lwd = 1.5) # Post Probs: Pr(Z_{t}=k|y_1,\ldots,y_{t-1})
+        if (paramMHMMR$K > 1) {
+          for (k in 2:paramMHMMR$K) {
+            lines(paramMHMMR$mData$X, statMHMMR$predict_prob[, k], col = colorsvec[k], lwd = 1.5) # Post Probs: Pr(Z_{t}=k|y_1,\ldots,y_{t-1})
+          }
         }
       }
 
@@ -45,8 +47,10 @@ ModelMHMMR <- setRefClass(
 
         # Filtering probabilities of the hidden process (segmentation)
         plot.default(paramMHMMR$mData$X, statMHMMR$filter_prob[, 1], type = "l", xlab = "x", ylab = expression('P(Z'[t] == k ~ '|' ~ list(y[1],..., y[t]) ~ ')'), col = colorsvec[1], lwd = 1.5, main = "Filtering probabilities", ylim = c(0, 1))
-        for (k in 2:paramMHMMR$K) {
-          lines(paramMHMMR$mData$X, statMHMMR$filter_prob[, k], col = colorsvec[k], lwd = 1.5) # Post Probs: Pr(Z_{t}=k|y_1,\ldots,y_t)
+        if (paramMHMMR$K > 1) {
+          for (k in 2:paramMHMMR$K) {
+            lines(paramMHMMR$mData$X, statMHMMR$filter_prob[, k], col = colorsvec[k], lwd = 1.5) # Post Probs: Pr(Z_{t}=k|y_1,\ldots,y_t)
+          }
         }
       }
 

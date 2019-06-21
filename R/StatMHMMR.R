@@ -27,7 +27,6 @@ StatMHMMR <- setRefClass(
   methods = list(
 
     initialize = function(paramMHMMR = ParamMHMMR()) {
-
       tau_tk <<- matrix(NA, paramMHMMR$mData$m, paramMHMMR$K) # tau_tk: smoothing probs: [nxK], tau_tk(t,k) = Pr(z_i=k | y1...yn)
       alpha_tk <<- matrix(NA, paramMHMMR$mData$m, ncol = paramMHMMR$K) # alpha_tk: [nxK], forwards probs: Pr(y1...yt,zt=k)
       beta_tk <<- matrix(NA, paramMHMMR$mData$m, paramMHMMR$K) # beta_tk: [nxK], backwards probs: Pr(yt+1...yn|zt=k)
@@ -49,7 +48,6 @@ StatMHMMR <- setRefClass(
       filtered <<- matrix(NA, paramMHMMR$mData$m, paramMHMMR$mData$d) # filtered: [nx1]
       smoothed_regressors <<- array(NA, dim = c(paramMHMMR$mData$m, paramMHMMR$mData$d, paramMHMMR$K)) # smoothed_regressors: [nxK]
       smoothed <<- matrix(NA, paramMHMMR$mData$m, paramMHMMR$mData$d) # smoothed: [nx1]
-
 
     },
 
@@ -93,8 +91,8 @@ StatMHMMR <- setRefClass(
       }
 
       # Prediction probabilities = Pr(z_t|y_1,...,y_{t-1})
-      predict_prob[1, ] <<- paramMHMMR$prior # t=1 p (z_1)
-      predict_prob[2:paramMHMMR$mData$m, ] <<- (alpha_tk[(1:(paramMHMMR$mData$m - 1)), ] %*% paramMHMMR$trans_mat) / (apply(alpha_tk[(1:(paramMHMMR$mData$m - 1)), ], 1, sum) %*% matrix(1, 1, paramMHMMR$K)) # t = 2,...,n
+      predict_prob[1,] <<- paramMHMMR$prior # t=1 p (z_1)
+      predict_prob[2:paramMHMMR$mData$m,] <<- (alpha_tk[(1:(paramMHMMR$mData$m - 1)),] %*% paramMHMMR$trans_mat) / (apply(as.matrix(alpha_tk[(1:(paramMHMMR$mData$m - 1)),]), 1, sum) %*% matrix(1, 1, paramMHMMR$K)) # t = 2,...,n
 
       # Predicted observations
       predictedk <- array(NA, dim = c(paramMHMMR$mData$m, paramMHMMR$mData$d, paramMHMMR$K))
@@ -133,8 +131,7 @@ StatMHMMR <- setRefClass(
 
         if (paramMHMMR$variance_type == "homoskedastic") {
           sk <- paramMHMMR$sigma2
-        }
-        else{
+        } else {
           sk <- paramMHMMR$sigma2[, , k]
         }
         z <- (paramMHMMR$mData$Y - mk) %*% solve(sk) * (paramMHMMR$mData$Y - mk)

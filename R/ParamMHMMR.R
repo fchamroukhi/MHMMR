@@ -18,9 +18,7 @@ ParamMHMMR <- setRefClass(
     mask = "matrix"
   ),
   methods = list(
-
     initialize = function(mData = MData(numeric(1), matrix(1)), K = 2, p = 3, variance_type = "heteroskedastic") {
-
       mData <<- mData
 
       phi <<- designmatrix(x = mData$X, p = p)$XBeta
@@ -31,18 +29,16 @@ ParamMHMMR <- setRefClass(
 
       if (variance_type == "homoskedastic") {
         nu <<- K - 1 + K * (K - 1) + K * (p + 1) * mData$d + mData$d * (mData$d + 1) / 2
-      }
-      else{
+      } else {
         nu <<- K - 1 + K * (K - 1) + K * (p + 1) * mData$d + K * mData$d * (mData$d + 1) / 2
       }
 
-      prior <<- matrix(NA, ncol = K - 1)
+      prior <<- matrix(NA, ncol = K)
       trans_mat <<- matrix(NA, K, K)
       beta <<- array(NA, dim = c(p + 1, mData$d, K))
       if (variance_type == "homoskedastic") {
         sigma2 <<- matrix(NA, mData$d, mData$d)
-      }
-      else{
+      } else {
         sigma2 <<- array(NA, dim = c(mData$d, mData$d, K))
       }
       mask <<- matrix(NA, K, K)
@@ -81,9 +77,11 @@ ParamMHMMR <- setRefClass(
       # Initialization of the transition matrix
       maskM <- 0.5 * diag(K) # Mask of order 1
 
-      for (k in 1:(K - 1)) {
-        ind <- which(maskM[k, ] != 0)
-        maskM[k, ind + 1] <- 0.5
+      if (K > 1) {
+        for (k in 1:(K - 1)) {
+          ind <- which(maskM[k,] != 0)
+          maskM[k, ind + 1] <- 0.5
+        }
       }
       trans_mat <<- maskM
       mask <<- maskM
@@ -97,15 +95,14 @@ ParamMHMMR <- setRefClass(
     },
 
     initMhmmrRegressors = function(try_algo = 1) {
-
       if (try_algo == 1) { # Uniform segmentation into K contiguous segments, and then a regression
 
         zi <- round(mData$m / K) - 1
 
         s <- 0 # If homoskedastic
         for (k in 1:K) {
-          yk <- mData$Y[((k - 1) * zi + 1):(k * zi), ]
-          Xk <- as.matrix(phi[((k - 1) * zi + 1):(k * zi), ])
+          yk <- mData$Y[((k - 1) * zi + 1):(k * zi),]
+          Xk <- as.matrix(phi[((k - 1) * zi + 1):(k * zi),])
 
           beta[, , k] <<- solve(t(Xk) %*% Xk + (10 ^ -4) * diag(p + 1)) %*% t(Xk) %*% yk # regress(yk,Xk); # for a use in octave, where regress doesnt exist
 
@@ -114,8 +111,7 @@ ParamMHMMR <- setRefClass(
           if (variance_type == "homoskedastic") {
             s <- (s + sk)
             sigma2 <<- s / mData$m
-          }
-          else {
+          } else {
             sigma2[, , k] <<- sk / length(yk)
           }
         }
@@ -139,8 +135,8 @@ ParamMHMMR <- setRefClass(
         for (k in 1:K) {
           i <- tk_init[k] + 1
           j <- tk_init[k + 1]
-          yk <- mData$Y[i:j, ]
-          Xk <- phi[i:j, ]
+          yk <- mData$Y[i:j,]
+          Xk <- phi[i:j,]
           beta[, , k] <<- solve(t(Xk) %*% Xk + 1e-4 * diag(p + 1)) %*% t(Xk) %*% yk #regress(yk,Xk); # for a use in octave, where regress doesnt exist
           muk <- Xk %*% beta[, , k]
           sk <- t(yk - muk) %*% (yk - muk)
@@ -149,8 +145,7 @@ ParamMHMMR <- setRefClass(
             s <- s + sk
             sigma2[1] <<- s / mData$m
 
-          }
-          else{
+          } else {
             sigma2[, , k] <<- sk / length(yk)
           }
         }
@@ -160,7 +155,7 @@ ParamMHMMR <- setRefClass(
     MStep = function(statMHMMR) {
       # Updates of the Markov chain parameters
       # Initial states prob: P(Z_1 = k)
-      prior <<- matrix(normalize(statMHMMR$tau_tk[1, ])$M)
+      prior <<- matrix(normalize(statMHMMR$tau_tk[1,])$M)
 
       # Transition matrix: P(Zt=i|Zt-1=j) (A_{k\ell})
       trans_mat <<- mkStochastic(apply(statMHMMR$xi_tkl, c(1, 2), sum))
@@ -181,7 +176,7 @@ ParamMHMMR <- setRefClass(
         lambda <- 1e-5 # If a bayesian prior on the beta's
 
 
-        # bk <- (solve(t(Xk) %*% Xk + lambda * diag(p + 1)) %*% t(Xk)) %*% yk
+        # bk <- (solve(t(Xk) %*% Xk + lambda * diag(p + 1)) %*% t(Xk)) %*% y
         bk <- (ginv(t(Xk) %*% Xk) %*% t(Xk)) %*% yk
 
         beta[, , k] <<- bk
@@ -192,8 +187,7 @@ ParamMHMMR <- setRefClass(
         if (variance_type == "homoskedastic") {
           s <- (s + sk)
           sigma2 <<- s / mData$m
-        }
-        else{
+        } else {
           sigma2[, , k] <<- sk / nk + lambda * diag(x = 1, mData$d)
         }
       }
