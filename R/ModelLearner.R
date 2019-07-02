@@ -1,83 +1,44 @@
+#' emMHMMR is used to fit a MHMMR model.
+#'
+#' emMHMMR is used to fit a MHMMR model. The estimation method is performed by
+#' the Expectation-Maximization algorithm.
+#'
+#' @details emMHMMR function implements the EM algorithm. This function starts
+#'   with an initialization of the parameters done by the method `initParam` of
+#'   the class [ParamMHMMR][ParamMHMMR], then it alternates between the E-Step
+#'   (method of the class [StatMHMMR][StatMHMMR]) and the M-Step (method of the
+#'   class [ParamMHMMR][ParamMHMMR]) until convergence (until the relative
+#'   variation of log-likelihood between two steps of the EM algorithm is less
+#'   than the `threshold` parameter).
+#'
+#' @param X Numeric vector of length \emph{m} representing the covariates/inputs
+#'   \eqn{x_{1},\dots,x_{m}}.
+#' @param Y Matrix of size \eqn{(m, d)} representing a \eqn{d} dimension
+#' time series observed at points \eqn{1,\dots,m}.
+#' @param K The number of regimes (MHMMR components).
+#' @param p Optional. The order of the polynomial regression. By default, `p` is
+#'   set at 3.
+#' @param variance_type Optional character indicating if the model is
+#'   "homoskedastic" or "heteroskedastic". By default the model is
+#'   "heteroskedastic".
+#' @param n_tries Optional. Number of runs of the EM algorithm. The solution
+#'   providing the highest log-likelihood will be returned.
+#'
+#'   If `n_tries` > 1, then for the first run, parameters are initialized by
+#'   uniformly segmenting the data into K segments, and for the next runs,
+#'   parameters are initialized by randomly segmenting the data into K
+#'   contiguous segments.
+#' @param max_iter Optional. The maximum number of iterations for the EM
+#'   algorithm.
+#' @param threshold Optional. A numeric value specifying the threshold for the
+#'   relative difference of log-likelihood between two steps of the EM as
+#'   stopping criteria.
+#' @param verbose Optional. A logical value indicating whether or not values of
+#'   the log-likelihood should be printed during EM iterations.
+#' @return EM returns an object of class [ModelMHMMR][ModelMHMMR].
+#' @seealso [ModelMHMMR], [ParamMHMMR], [StatMHMMR]
 #' @export
 emMHMMR <- function(X, Y, K, p = 3, variance_type = c("heteroskedastic", "homoskedastic"), n_tries = 1, max_iter = 1500, threshold = 1e-6, verbose = FALSE) {
-    # learn_mhmmr learn a Regression model with a Hidden Markov Process (MHMMR)
-    # for modeling and segmentation of a time series with regime changes.
-    # The learning is performed by the EM (Baum-Welch) algorithm.
-    #
-    #
-    # Inputs :
-    #
-    #          (x,y) : a time series composed of m points : dim(y)=[m d]
-    #                * Each curve is observed during the interval [0,T], i.e x =[t_1,...,t_m]
-    #
-    #           K : Number of polynomial regression components (regimes)
-    #          	p : degree of the polynomials
-    #
-    # Outputs :
-    #
-    #         mhmmr: the estimated MHMMR model. a structure composed of:
-    #
-    #         prior: [Kx1]: prior(k) = Pr(z_1=k), k=1...K
-    #         trans_mat: [KxK], trans_mat(\ell,k) = Pr(z_t = k|z_{t-1}=\ell)
-    #         reg_param: the paramters of the regressors:
-    #                 betak: regression coefficients
-    #                 sigmak (or sigma2) : the variance(s)
-    #         Stats:
-    #           tau_tk: smoothing probs: [nxK], tau_tk(t,k) = Pr(z_i=k | y1...yn)
-    #           alpha_tk: [nxK], forwards probs: Pr(y1...yt,zt=k)
-    #           beta_tk: [nxK], backwards probs: Pr(yt+1...yn|zt=k)
-    #           xi_tkl: [(n-1)xKxK], joint post probs : xi_tk\elll(t,k,\ell)  = Pr(z_t=k, z_{t-1}=\ell | Y) t =2,..,n
-    #           X: [nx(p+1)] regression design matrix
-    #           nu: model complexity
-    #           parameter_vector
-    #           f_tk: [nxK] f(yt|zt=k)
-    #           log_f_tk: [nxK] log(f(yt|zt=k))
-    #           loglik: log-likelihood at convergence
-    #           stored_loglik: stored log-likelihood values during EM
-    #           cputime: for the best run
-    #           cputime_total: for all the EM runs
-    #           klas: [nx1 double]
-    #           Zik: [nxK]
-    #           state_probs: [nxK]
-    #           BIC: -2.1416e+03
-    #           AIC: -2.0355e+03
-    #           regressors: [nxK]
-    #           predict_prob: [nxK]: Pr(zt=k|y1...y_{t-1})
-    #           predicted: [nx1]
-    #           filter_prob: [nxK]: Pr(zt=k|y1...y_t)
-    #           filtered: [nx1]
-    #           smoothed_regressors: [nxK]
-    #           smoothed: [nx1]
-    #
-    #
-    #
-    ## Please cite the following papers for this code:
-    #
-    #
-    #
-    # @article{Chamroukhi-FDA-2018,
-    #  	Journal = {Wiley Interdisciplinary Reviews: Data Mining and Knowledge Discovery},
-    #  	Author = {Faicel Chamroukhi and Hien D. Nguyen},
-    #  	Note = {DOI: 10.1002/widm.1298.},
-    #  	Volume = {},
-    #  	Title = {Model-Based Clustering and Classification of Functional Data},
-    #  	Year = {2019},
-    #  	Month = {to appear},
-    #  	url =  {https://chamroukhi.com/papers/MBCC-FDA.pdf}
-    # }
-    #
-    # @article{Chamroukhi-MHMMR-2013,
-    # 	Author = {Trabelsi, D. and Mohammed, S. and Chamroukhi, F. and Oukhellou, L. and Amirat, Y.},
-    # 	Journal = {IEEE Transactions on Automation Science and Engineering},
-    # 	Number = {10},
-    # 	Pages = {829--335},
-    # 	Title = {An unsupervised approach for automatic activity recognition based on Hidden Markov Model Regression},
-    # 	Volume = {3},
-    # 	Year = {2013},
-    # 	url  = {https://chamroukhi.com/papers/Chamroukhi-MHMMR-IeeeTase.pdf}
-    # 	}
-    #
-    ##########################################################################################
 
     if (is.vector(Y)) { # Univariate time series
       Y <- as.matrix(Y)
@@ -92,10 +53,8 @@ emMHMMR <- function(X, Y, K, p = 3, variance_type = c("heteroskedastic", "homosk
     while (nb_good_try < n_tries) {
       start_time <- Sys.time()
 
-      if (n_tries > 1) {
-        if (verbose) {
-          cat(paste0("EM try number: ", nb_good_try + 1, "\n\n"))
-        }
+      if (n_tries > 1 && verbose) {
+        cat(paste0("EM try number: ", nb_good_try + 1, "\n\n"))
       }
       total_nb_try <- total_nb_try + 1
 
@@ -103,7 +62,7 @@ emMHMMR <- function(X, Y, K, p = 3, variance_type = c("heteroskedastic", "homosk
       # Initialization of the Markov chain params, the regression coeffs, and the variance(s)
       variance_type <- match.arg(variance_type)
       param <- ParamMHMMR$new(mData = mData, K = K, p = p, variance_type = variance_type)
-      param$initMhmmr(nb_good_try + 1)
+      param$initParam(nb_good_try + 1)
 
       iter <- 0
       prev_loglik <- -Inf
@@ -135,7 +94,7 @@ emMHMMR <- function(X, Y, K, p = 3, variance_type = c("heteroskedastic", "homosk
         if ((prev_loglik - stat$loglik) > 1e-4) {
           top <- top + 1
           if (top == 10) {
-            stop(paste0("EM log-likelihood is decreasing from ", prev_loglik, "to ", stat$loglik, " !"))
+            warning(paste0("EM log-likelihood is decreasing from ", prev_loglik, "to ", stat$loglik, " !"))
           }
         }
 
@@ -151,10 +110,8 @@ emMHMMR <- function(X, Y, K, p = 3, variance_type = c("heteroskedastic", "homosk
 
       cputime_total[nb_good_try + 1] <- Sys.time() - start_time
 
-      if (n_tries > 1) {
-        if (verbose) {
-          cat(paste0("Max value of the log-likelihood: ", stat$loglik, "\n"))
-        }
+      if (n_tries > 1 && verbose) {
+        cat(paste0("Max value of the log-likelihood: ", stat$loglik, "\n\n"))
       }
 
       if (length(param$beta) != 0) {
@@ -175,10 +132,8 @@ emMHMMR <- function(X, Y, K, p = 3, variance_type = c("heteroskedastic", "homosk
 
     }
 
-    if (n_tries > 1) {
-      if (verbose) {
-        cat(paste0("Best value of the log-likelihood: ", statSolution$loglik, "\n"))
-      }
+    if (n_tries > 1 && verbose) {
+      cat(paste0("Best value of the log-likelihood: ", statSolution$loglik, "\n"))
     }
 
     # Smoothing state sequences : argmax(smoothing probs), and corresponding binary allocations partition
@@ -188,4 +143,4 @@ emMHMMR <- function(X, Y, K, p = 3, variance_type = c("heteroskedastic", "homosk
     statSolution$computeStats(paramSolution, cputime_total)
 
     return(ModelMHMMR(paramMHMMR = paramSolution, statMHMMR = statSolution))
-  }
+}

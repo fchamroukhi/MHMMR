@@ -46,7 +46,7 @@ browseVignettes("MHMMR")
 ``` r
 library(MHMMR)
 
-data("simulatedtimeseries")
+data("toydataset")
 
 K <- 5 # Number of regimes (states)
 p <- 3 # Dimension of beta (order of the polynomial regressors)
@@ -57,7 +57,7 @@ max_iter <- 1500
 threshold <- 1e-6
 verbose <- TRUE
 
-mhmmr <- emMHMMR(simulatedtimeseries$X, simulatedtimeseries[, 2:ncol(simulatedtimeseries)],
+mhmmr <- emMHMMR(toydataset$x, toydataset[, c("y1", "y2", "y3")],
                  K, p, variance_type, n_tries, max_iter, threshold, verbose)
 #> EM: Iteration : 1 || log-likelihood : -4425.29307889945
 #> EM: Iteration : 2 || log-likelihood : -2876.80418310609

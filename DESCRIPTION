@@ -38,6 +38,8 @@ Collate:
     ModelMHMMR.R
     ModelLearner.R
     ModelSelection.R
+    data-realdataset.R
+    data-toydataset.R
 VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true

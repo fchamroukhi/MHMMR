@@ -37,7 +37,7 @@ See `help(package="MHMMR")` for further details and references provided by `cita
 # Load data
 
 ```{r}
-data("simulatedtimeseries")
+data("toydataset")
 ```
 
 # Set up MHMMR model parameters
@@ -60,7 +60,7 @@ verbose <- TRUE
 # Estimation
 
 ```{r}
-mhmmr <- emMHMMR(simulatedtimeseries$X, simulatedtimeseries[, 2:ncol(simulatedtimeseries)], 
+mhmmr <- emMHMMR(toydataset$x, toydataset[,c("y1", "y2", "y3")], 
                  K, p, variance_type, n_tries, max_iter, threshold, verbose)
 ```
 

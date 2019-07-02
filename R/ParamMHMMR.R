@@ -1,5 +1,36 @@
-#' @importFrom MASS ginv
+#' A Reference Class which contains parameters of a MHMMR model.
+#'
+#' ParamMHMMR contains all the parameters of a MHMMR model.
+#'
+#' @field mData [MData][MData] object representing the sample (covariates/inputs
+#'   `X` and observed multivariate responses/outputs `Y`).
+#' @field K The number of regimes (MHMMR components).
+#' @field p The order of the polynomial regression.
+#' @field variance_type Character indicating if the model is homoskedastic
+#'   (`variance_type = "homoskedastic"`) or heteroskedastic (`variance_type =
+#'   "heteroskedastic"`). By default the model is heteroskedastic.
+#' @field prior The prior probabilities of the Markov chain. `prior` is a row
+#'   matrix of dimension \eqn{(1, K)}.
+#' @field trans_mat The transition matrix of the Markov chain. `trans_mat` is a
+#'   matrix of dimension \eqn{(K, K)}.
+#' @field mask Mask applied to the transition matrices `trans_mat`. By default,
+#'   a mask of order one is applied.
+#' @field beta Parameters of the polynomial regressions. \eqn{\boldsymbol{\beta}
+#'   = (\boldsymbol{\beta}_{1},\dots,\boldsymbol{\beta}_{K})}{\beta =
+#'   (\beta_{1},\dots,\beta_{K})} is an array of dimension \eqn{(p + 1, d, K)},
+#'   with `p` the order of the polynomial regression. `p` is fixed to 3 by
+#'   default.
+#' @field sigma2 The variances for the `K` regimes. If MRHLP model is
+#'   heteroskedastic (`variance_type = "heteroskedastic"`) then `sigma2` is an
+#'   array of size \eqn{(d, d, K)} (otherwise MRHLP model is homoskedastic
+#'   (`variance_type = "homoskedastic"`) and `sigma2` is a matrix of size
+#'   \eqn{(d, d)}).
+#' @field nu The degree of freedom of the MHMMR model representing the
+#'   complexity of the model.
+#' @field phi A list giving the regression design matrices for the polynomial
+#'   and the logistic regressions.
 #' @export
+#' @importFrom MASS ginv
 ParamMHMMR <- setRefClass(
   "ParamMHMMR",
   fields = list(
@@ -28,9 +59,9 @@ ParamMHMMR <- setRefClass(
       variance_type <<- variance_type
 
       if (variance_type == "homoskedastic") {
-        nu <<- K - 1 + K * (K - 1) + K * (p + 1) * mData$d + mData$d * (mData$d + 1) / 2
+        nu <<- K - 1 + K * (K - 1) + mData$d * (p + 1) * K + mData$d * (mData$d + 1) / 2
       } else {
-        nu <<- K - 1 + K * (K - 1) + K * (p + 1) * mData$d + K * mData$d * (mData$d + 1) / 2
+        nu <<- K - 1 + K * (K - 1) + mData$d * (p + 1) * K + K * mData$d * (mData$d + 1) / 2
       }
 
       prior <<- matrix(NA, ncol = K)
@@ -45,32 +76,15 @@ ParamMHMMR <- setRefClass(
 
     },
 
-    initMhmmr = function(try_algo = 1) {
-      # function mhmmr =  initMhmmr(X, y, K, type_variance, EM_try)
-      # init_mhmmr initialize the parameters of a Multivriate Hidden Markov Model
-      # Regression (MHMMR) model
-      #
-      # Inputs :
-      #
-      #           X: [nx(p+1)] regression desing matrix
-      #           y: [nxd] multivariate time series
-      #           K : Number of polynomial regression components (regimes)
-      #          	type_variance: hoskedastoc or heteroskedastic
-      #           EM_try: number of the current EM run
-      #
-      # Outputs :
-      #
-      #         mhmmr: the initial MHMMR model. a structure composed of:
-      #
-      #         prior: [Kx1]: prior(k) = Pr(z_1=k), k=1...K
-      #         trans_mat: [KxK], trans_mat(\ell,k) = Pr(z_t = k|z_{t-1}=\ell)
-      #         reg_param: the paramters of the regressors:
-      #                 betak: regression coefficients
-      #                 sigma2k (or sigma2) : the covariance matrices(s). sigma2k(k) = cov[y(t)|z(t)=k]
-      #         and some stats: like the the posterior probs, the loglikelihood,
-      #         etc
-      #
-      ################################################################################
+    initParam = function(try_algo = 1) {
+      "Method to initialize parameters \\code{mask}, \\code{prior},
+      \\code{trans_mat}, \\code{beta} and \\code{sigma2}.
+
+      If \\code{try_algo = 1} then \\code{beta} and \\code{sigma2} are
+      initialized by segmenting  the time series \\code{Y} uniformly into
+      \\code{K} contiguous segments. Otherwise, \\code{beta} and
+      \\code{sigma2} are initialized by segmenting randomly the time series
+      \\code{Y} into \\code{K} segments."
 
       # Initialization taking into account the constraint:
 
@@ -90,11 +104,6 @@ ParamMHMMR <- setRefClass(
       prior <<- matrix(c(1, rep(0, K - 1)))
 
       # Initialization of regression coefficients and variances
-      initMhmmrRegressors(try_algo)
-
-    },
-
-    initMhmmrRegressors = function(try_algo = 1) {
       if (try_algo == 1) { # Uniform segmentation into K contiguous segments, and then a regression
 
         zi <- round(mData$m / K) - 1
@@ -115,8 +124,7 @@ ParamMHMMR <- setRefClass(
             sigma2[, , k] <<- sk / length(yk)
           }
         }
-      }
-      else{# Random segmentation into contiguous segments, and then a regression
+      } else {# Random segmentation into contiguous segments, and then a regression
 
         Lmin <- p + 1 + 1 # Minimum length of a segment
         tk_init <- rep(0, K)
@@ -150,9 +158,14 @@ ParamMHMMR <- setRefClass(
           }
         }
       }
+
     },
 
     MStep = function(statMHMMR) {
+      "Method which implements the M-step of the EM algorithm to learn the
+      parameters of the MHMMR model based on statistics provided by
+      \\code{statMHMMR} (which contains the E-step)."
+
       # Updates of the Markov chain parameters
       # Initial states prob: P(Z_1 = k)
       prior <<- matrix(normalize(statMHMMR$tau_tk[1,])$M)

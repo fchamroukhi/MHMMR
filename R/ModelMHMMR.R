@@ -1,3 +1,12 @@
+#' A Reference Class which represents a fitted MHMMR model.
+#'
+#' ModelMHMMR represents an estimated MHMMR model.
+#'
+#' @field paramMHMMR A [ParamMHMMR][ParamMHMMR] object. It contains the estimated
+#'   values of the parameters.
+#' @field statMHMMR A [StatMHMMR][StatMHMMR] object. It contains all the statistics
+#'   associated to the MHMMR model.
+#' @seealso [ParamMHMMR], [StatMHMMR]
 #' @export
 ModelMHMMR <- setRefClass(
   "ModelMHMMR",
@@ -7,6 +16,21 @@ ModelMHMMR <- setRefClass(
   ),
   methods = list(
     plot = function(what = c("predicted", "filtered", "smoothed", "regressors")) {
+      "Plot method.
+      \\describe{
+        \\item{\\code{what}}{The type of graph requested:
+          \\itemize{
+            \\item \\code{\"predicted\" = } Predicted time series and predicted
+            regime probabilities.
+            \\item \\code{\"filtered\" = } Filtered time series and filtering
+            regime probabilities.
+            \\item \\code{\"smoothed\" = } Smoothed time series, and
+            segmentation.
+            \\item \\code{\"regressors\" = } Polynomial regression components.
+          }
+        }
+      }
+      By default, all the above graphs are produced."
 
       what <- match.arg(what, several.ok = TRUE)
 
@@ -118,6 +142,7 @@ ModelMHMMR <- setRefClass(
     },
 
     summary = function() {
+      "Summary method."
 
       digits = getOption("digits")
 
