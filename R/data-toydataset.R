@@ -7,46 +7,46 @@
 #' \describe{
 #'   \item{x}{The covariate variable which is the time in that case.}
 #'   \item{y1}{The first dimension of the time series. The latter has been
-#'   generated as follows:
+#'     generated as follows:
 #'     \itemize{
 #'       \item  First regime: 100 values of Normally distributed random numbers.
 #'       \item Second regime: 120 values of Normally distributed random numbers
-#'       with mean 7.
+#'         with mean 7.
 #'       \item Third regime: 200 values of Normally distributed random numbers
-#'       with mean 4.
+#'         with mean 4.
 #'       \item Fourth regime: 100 values of Normally distributed random numbers
-#'       with mean -1.
+#'         with mean -1.
 #'       \item Fifth regime: 150 values of Normally distributed random numbers
-#'       with mean 3.5.
+#'         with mean 3.5.
 #'     }
 #'   }
-#'  \item{y2}{The second dimension of the time series. The latter has been
-#'   generated as follows:
+#'   \item{y2}{The second dimension of the time series. The latter has been
+#'     generated as follows:
 #'     \itemize{
 #'       \item  First regime: 100 values of Normally distributed random numbers
-#'       with mean 1.
+#'         with mean 1.
 #'       \item Second regime: 120 values of Normally distributed random numbers
-#'       with mean 5.
+#'         with mean 5.
 #'       \item Third regime: 200 values of Normally distributed random numbers
-#'       with mean 6.
+#'         with mean 6.
 #'       \item Fourth regime: 100 values of Normally distributed random numbers
-#'       with mean -2.
+#'         with mean -2.
 #'       \item Fifth regime: 150 values of Normally distributed random numbers
-#'       with mean 2.
+#'        with mean 2.
 #'     }
 #'   }
 #'   \item{y3}{The third dimension of the time series. The latter has been
-#'   generated as follows:
+#'     generated as follows:
 #'     \itemize{
 #'       \item  First regime: 100 values of Normally distributed random numbers
-#'       with mean -2.
+#'         with mean -2.
 #'       \item Second regime: 120 values of Normally distributed random numbers
-#'       with mean 10.
+#'         with mean 10.
 #'       \item Third regime: 200 values of Normally distributed random numbers
-#'       with mean 8.
+#'         with mean 8.
 #'       \item Fourth regime: 100 values of Normally distributed random numbers.
 #'       \item Fifth regime: 150 values of Normally distributed random numbers
-#'       with mean 5.
+#'         with mean 5.
 #'     }
 #'   }
 #' }

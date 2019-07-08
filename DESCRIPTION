@@ -1,6 +1,6 @@
 Type: Package
 Package: MHMMR
-Title: Multiple Hidden Markov Model Regression (MHMMR) for Joint Segmentation of Multivariate Time Series
+Title: Multiple Hidden Markov Model Regression ('MHMMR') for Joint Segmentation of Multivariate Time Series
 Version: 0.1.0
 Authors@R: c(person("Faicel", "Chamroukhi", role = c("aut"),
     email = "faicel.chamroukhi@unicaen.fr",
@@ -36,8 +36,8 @@ Collate:
     ParamMHMMR.R
     StatMHMMR.R
     ModelMHMMR.R
-    ModelLearner.R
-    ModelSelection.R
+    emMHMMR.R
+    selectMHMMR.R
     data-realdataset.R
     data-toydataset.R
 VignetteBuilder: knitr

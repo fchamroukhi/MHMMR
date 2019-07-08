@@ -31,7 +31,7 @@
 #'   \boldsymbol{Y})  = tau\_tk;\ 0 \ \textrm{otherwise}}{z_ik = 1 if z_ik = arg
 #'   max_s P(z_{i} = s | Y)  = tau_tk; 0 otherwise}, \eqn{k = 1,\dots,K}.
 #' @field state_probs Matrix of size \eqn{(m, K)} giving the distribution of the
-#'   Markov chain
+#'   Markov chain.
 #'   \eqn{P(z_{1},\dots,z_{m};\pi,\boldsymbol{A})}{P(z_{1},\dots,z_{m};\pi,A)}
 #'   with \eqn{\pi} the prior probabilities (field `prior` of the class
 #'   [ParamMHMMR][ParamMHMMR]) and \eqn{\boldsymbol{A}}{A} the transition matrix
@@ -111,6 +111,14 @@ StatMHMMR <- setRefClass(
     },
 
     MAP = function() {
+      "MAP calculates values of the fields \\code{z_ik} and \\code{klas}
+      by applying the Maximum A Posteriori Bayes allocation rule.
+
+      \\eqn{z\\_ik = 1 \\ \\textrm{if} \\ z\\_ik = \\textrm{arg} \\
+      \\textrm{max}_{s} \\ P(z_{i} = s | \\boldsymbol{Y})  = tau\\_tk;\\ 0 \\
+      \\textrm{otherwise}}{z_ik = 1 if z_ik = arg max_s P(z_{i} = s | Y)  =
+      tau_tk; 0 otherwise}"
+
       N <- nrow(tau_tk)
       K <- ncol(tau_tk)
       ikmax <- max.col(tau_tk)
@@ -123,12 +131,20 @@ StatMHMMR <- setRefClass(
     },
 
     computeLikelihood = function(paramMHMMR) {
+      "Method to compute the log-likelihood based on some parameters given by
+      the object \\code{paramMHMMR} of class \\link{ParamMHMMR}."
+
       fb <- forwardsBackwards(paramMHMMR$prior, paramMHMMR$trans_mat, t(f_tk))
       loglik <<- fb$loglik
 
     },
 
     computeStats = function(paramMHMMR, cputime_total) {
+      "Method used in the EM algorithm to compute statistics based on
+      parameters provided by the object \\code{paramMHMMR} of class
+      \\link{ParamMHMMR}. It also calculates the average computing time of a
+      single run of the EM algorithm."
+
       cputime <<- mean(cputime_total)
 
       # State sequence prob p(z_1,...,z_n;\pi,A)
@@ -181,6 +197,10 @@ StatMHMMR <- setRefClass(
     },
 
     EStep = function(paramMHMMR) {
+      "Method used in the EM algorithm to update statistics based on parameters
+      provided by the object \\code{paramMHMMR} of class \\link{ParamMHMMR}
+      (prior and posterior probabilities)."
+
       muk <- array(0, dim = c(paramMHMMR$mData$m, paramMHMMR$mData$d, paramMHMMR$K))
 
       # Observation likelihoods

@@ -5,10 +5,13 @@
 \alias{realdataset}
 \title{Time series representing the three acceleration components recorded over time
 during the activity of a given person.}
-\format{A data frame with 2253 rows and 4 columns: \describe{ \item{x}{The
-covariate variable which is the time in that case.} \item{y1}{X axis
-component of the acceleration.} \item{y2}{Y axis component of the
-acceleration.} \item{y3}{Z axis component of the acceleration.}}}
+\format{A data frame with 2253 rows and 4 columns:
+\describe{
+\item{x}{The covariate variable which is the time in that case.}
+\item{y1}{X axis component of the acceleration.}
+\item{y2}{Y axis component of the acceleration.}
+\item{y3}{Z axis component of the acceleration.}
+}}
 \usage{
 realdataset
 }

@@ -77,8 +77,8 @@ ParamMHMMR <- setRefClass(
     },
 
     initParam = function(try_algo = 1) {
-      "Method to initialize parameters \\code{mask}, \\code{prior},
-      \\code{trans_mat}, \\code{beta} and \\code{sigma2}.
+      "Method to initialize parameters \\code{prior}, \\code{trans_mat},
+      \\code{beta} and \\code{sigma2}.
 
       If \\code{try_algo = 1} then \\code{beta} and \\code{sigma2} are
       initialized by segmenting  the time series \\code{Y} uniformly into
@@ -163,8 +163,9 @@ ParamMHMMR <- setRefClass(
 
     MStep = function(statMHMMR) {
       "Method which implements the M-step of the EM algorithm to learn the
-      parameters of the MHMMR model based on statistics provided by
-      \\code{statMHMMR} (which contains the E-step)."
+      parameters of the MHMMR model based on statistics provided by the object
+      \\code{statMHMMR} of class \\link{StatMHMMR} (which contains the
+      E-step)."
 
       # Updates of the Markov chain parameters
       # Initial states prob: P(Z_1 = k)

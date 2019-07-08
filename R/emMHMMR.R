@@ -13,8 +13,8 @@
 #'
 #' @param X Numeric vector of length \emph{m} representing the covariates/inputs
 #'   \eqn{x_{1},\dots,x_{m}}.
-#' @param Y Matrix of size \eqn{(m, d)} representing a \eqn{d} dimension
-#' time series observed at points \eqn{1,\dots,m}.
+#' @param Y Matrix of size \eqn{(m, d)} representing a \eqn{d} dimension time
+#'   series observed at points \eqn{1,\dots,m}.
 #' @param K The number of regimes (MHMMR components).
 #' @param p Optional. The order of the polynomial regression. By default, `p` is
 #'   set at 3.
@@ -142,5 +142,5 @@ emMHMMR <- function(X, Y, K, p = 3, variance_type = c("heteroskedastic", "homosk
     # Finish the computation of statistics
     statSolution$computeStats(paramSolution, cputime_total)
 
-    return(ModelMHMMR(paramMHMMR = paramSolution, statMHMMR = statSolution))
+    return(ModelMHMMR(param = paramSolution, stat = statSolution))
 }
