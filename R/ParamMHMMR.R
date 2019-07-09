@@ -111,7 +111,7 @@ ParamMHMMR <- setRefClass(
         s <- 0 # If homoskedastic
         for (k in 1:K) {
           yk <- mData$Y[((k - 1) * zi + 1):(k * zi),]
-          Xk <- as.matrix(phi[((k - 1) * zi + 1):(k * zi),])
+          Xk <- phi[((k - 1) * zi + 1):(k * zi), , drop = FALSE]
 
           beta[, , k] <<- solve(t(Xk) %*% Xk + (10 ^ -4) * diag(p + 1)) %*% t(Xk) %*% yk # regress(yk,Xk); # for a use in octave, where regress doesnt exist
 
@@ -134,7 +134,7 @@ ParamMHMMR <- setRefClass(
         for (k in 2:K) {
           K_1 <- K_1 - 1
           temp <- seq(tk_init[k - 1] + Lmin, mData$m - K_1 * Lmin)
-          ind <- sample(1:length(temp), length(temp))
+          ind <- sample(length(temp))
           tk_init[k] <- temp[ind[1]]
         }
         tk_init[K + 1] <- mData$m
@@ -144,7 +144,7 @@ ParamMHMMR <- setRefClass(
           i <- tk_init[k] + 1
           j <- tk_init[k + 1]
           yk <- mData$Y[i:j,]
-          Xk <- phi[i:j,]
+          Xk <- phi[i:j, ,  drop = FALSE]
           beta[, , k] <<- solve(t(Xk) %*% Xk + 1e-4 * diag(p + 1)) %*% t(Xk) %*% yk #regress(yk,Xk); # for a use in octave, where regress doesnt exist
           muk <- Xk %*% beta[, , k]
           sk <- t(yk - muk) %*% (yk - muk)
