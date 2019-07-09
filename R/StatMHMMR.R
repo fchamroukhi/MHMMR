@@ -22,7 +22,6 @@
 #' @field loglik Numeric. Log-likelihood of the MHMMR model.
 #' @field stored_loglik List. Stored values of the log-likelihood at each
 #'   iteration of the EM algorithm.
-#' @field cputime Numeric. Average computing time of a EM algorithm run.
 #' @field klas Column matrix of the labels issued from `z_ik`. Its elements are
 #'   \eqn{klas(i) = k}, \eqn{k = 1,\dots,K}.
 #' @field z_ik Hard segmentation logical matrix of dimension \eqn{(m, K)}
@@ -69,7 +68,6 @@ StatMHMMR <- setRefClass(
     log_f_tk = "matrix", # log_f_tk: [nxK] log(f(yt|zt=k))
     loglik = "numeric", # loglik: log-likelihood at convergence
     stored_loglik = "list", # stored_loglik: stored log-likelihood values during EM
-    cputime = "numeric", # cputime: for the best run
     klas = "matrix", # klas: [nx1 double]
     z_ik = "matrix", # z_ik: [nxK]
     state_probs = "matrix", # state_probs: [nxK]
@@ -94,7 +92,6 @@ StatMHMMR <- setRefClass(
       log_f_tk <<- matrix(NA, paramMHMMR$mData$m, paramMHMMR$K) # log_f_tk: [nxK] log(f(yt|zt=k))
       loglik <<- -Inf # loglik: log-likelihood at convergence
       stored_loglik <<- list() # stored_loglik: stored log-likelihood values during EM
-      cputime <<- Inf # cputime: for the best run
       klas <<- matrix(NA, paramMHMMR$mData$m, 1) # klas: [nx1 double]
       z_ik <<- matrix(NA, paramMHMMR$mData$m, paramMHMMR$K) # z_ik: [nxK]
       state_probs <<- matrix(NA, paramMHMMR$mData$m, paramMHMMR$K) # state_probs: [nxK]
@@ -139,13 +136,10 @@ StatMHMMR <- setRefClass(
 
     },
 
-    computeStats = function(paramMHMMR, cputime_total) {
+    computeStats = function(paramMHMMR) {
       "Method used in the EM algorithm to compute statistics based on
       parameters provided by the object \\code{paramMHMMR} of class
-      \\link{ParamMHMMR}. It also calculates the average computing time of a
-      single run of the EM algorithm."
-
-      cputime <<- mean(cputime_total)
+      \\link{ParamMHMMR}."
 
       # State sequence prob p(z_1,...,z_n;\pi,A)
       state_probs <<- hmmProcess(paramMHMMR$prior, paramMHMMR$trans_mat, paramMHMMR$mData$m)

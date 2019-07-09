@@ -48,10 +48,8 @@ emMHMMR <- function(X, Y, K, p = 3, variance_type = c("heteroskedastic", "homosk
     nb_good_try <- 0
     total_nb_try <- 0
     best_loglik <- -Inf
-    cputime_total <- c()
 
     while (nb_good_try < n_tries) {
-      start_time <- Sys.time()
 
       if (n_tries > 1 && verbose) {
         cat(paste0("EM try number: ", nb_good_try + 1, "\n\n"))
@@ -108,8 +106,6 @@ emMHMMR <- function(X, Y, K, p = 3, variance_type = c("heteroskedastic", "homosk
 
       } # End of the EM loop
 
-      cputime_total[nb_good_try + 1] <- Sys.time() - start_time
-
       if (n_tries > 1 && verbose) {
         cat(paste0("Max value of the log-likelihood: ", stat$loglik, "\n\n"))
       }
@@ -140,7 +136,7 @@ emMHMMR <- function(X, Y, K, p = 3, variance_type = c("heteroskedastic", "homosk
     statSolution$MAP()
 
     # Finish the computation of statistics
-    statSolution$computeStats(paramSolution, cputime_total)
+    statSolution$computeStats(paramSolution)
 
     return(ModelMHMMR(param = paramSolution, stat = statSolution))
 }
