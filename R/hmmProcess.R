@@ -20,7 +20,7 @@
 #' @return Matrix of size \eqn{(n, K)} giving the distribution of process given the K-state Markov
 #'   chain parameters.
 hmmProcess <- function(prior, trans_mat, n) {
-  
+
   K <- length(prior)
   state_probs <- matrix(0, n, K)
   pz1 <- prior

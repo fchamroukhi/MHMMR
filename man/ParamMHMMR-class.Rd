@@ -6,7 +6,9 @@
 \alias{ParamMHMMR}
 \title{A Reference Class which contains parameters of a MHMMR model.}
 \description{
-ParamMHMMR contains all the parameters of a MHMMR model. The paramerts are calculated by the initialization Method and then updated by the Method implementing the M-Step of the EM algorithm.
+ParamMHMMR contains all the parameters of a MHMMR model. The paramerts are
+calculated by the initialization Method and then updated by the Method
+implementing the M-Step of the EM algorithm.
 }
 \section{Fields}{
 
@@ -53,13 +55,13 @@ and the logistic regressions.}
 
 \describe{
 \item{\code{initParam(try_algo = 1)}}{Method to initialize parameters \code{prior}, \code{trans_mat},
-\code{beta} and \code{sigma2}.
+      \code{beta} and \code{sigma2}.
 
-If \code{try_algo = 1} then \code{beta} and \code{sigma2} are
-initialized by segmenting  the time series \code{Y} uniformly into
-\code{K} contiguous segments. Otherwise, \code{beta} and
-\code{sigma2} are initialized by segmenting randomly the time series
-\code{Y} into \code{K} segments.}
+      If \code{try_algo = 1} then \code{beta} and \code{sigma2} are
+      initialized by segmenting  the time series \code{Y} uniformly into
+      \code{K} contiguous segments. Otherwise, \code{beta} and
+      \code{sigma2} are initialized by segmenting randomly the time series
+      \code{Y} into \code{K} segments.}
 
 \item{\code{MStep(statMHMMR)}}{Method which implements the M-step of the EM algorithm to learn the
 parameters of the MHMMR model based on statistics provided by the object

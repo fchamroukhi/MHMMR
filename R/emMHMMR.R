@@ -1,7 +1,8 @@
-#' emMHMMR implements the EM (Baum-Welch) algorithm to fit a MHMMR model.
+#' emMHMMR implemens the EM (Baum-Welch) algorithm to fit a MHMMR model.
 #'
-#' emMHMMR implements the maximum-likelihood parameter estimation of the MHMMR model by the
-#' Expectation-Maximization (EM) algorithm, known as Baum-Welch algorithm in the context of HMMs.
+#' emMHMMR implements the maximum-likelihood parameter estimation of the MHMMR
+#' model by the Expectation-Maximization (EM) algorithm, known as Baum-Welch
+#' algorithm in the context of HMMs.
 #'
 #'
 #' @details emMHMMR function implements the EM algorithm. This function starts
@@ -41,103 +42,103 @@
 #' @export
 emMHMMR <- function(X, Y, K, p = 3, variance_type = c("heteroskedastic", "homoskedastic"), n_tries = 1, max_iter = 1500, threshold = 1e-6, verbose = FALSE) {
 
-  if (is.vector(Y)) { # Univariate time series
-    Y <- as.matrix(Y)
-  }
-  mData <- MData$new(X, Y)
-
-  nb_good_try <- 0
-  total_nb_try <- 0
-  best_loglik <- -Inf
-
-  while (nb_good_try < n_tries) {
-
-    if (n_tries > 1 && verbose) {
-      cat(paste0("EM try number: ", nb_good_try + 1, "\n\n"))
+    if (is.vector(Y)) { # Univariate time series
+      Y <- as.matrix(Y)
     }
-    total_nb_try <- total_nb_try + 1
+    mData <- MData$new(X, Y)
 
-    # EM Initializaiton step
-    # Initialization of the Markov chain parameters, the regression coefficients, and the variance(s)
-    variance_type <- match.arg(variance_type)
-    param <- ParamMHMMR$new(mData = mData, K = K, p = p, variance_type = variance_type)
-    param$initParam(nb_good_try + 1)
+    nb_good_try <- 0
+    total_nb_try <- 0
+    best_loglik <- -Inf
 
-    iter <- 0
-    prev_loglik <- -Inf
-    converged <- FALSE
-    top <- 0
+    while (nb_good_try < n_tries) {
 
-    stat <- StatMHMMR$new(paramMHMMR = param)
+      if (n_tries > 1 && verbose) {
+        cat(paste0("EM try number: ", nb_good_try + 1, "\n\n"))
+      }
+      total_nb_try <- total_nb_try + 1
 
-    while ((iter <= max_iter) && !converged) {
-      # E step : calculate the tau_tk (p(Zt=k|y1...ym;theta)) and xi t_kl (and the log-likelihood) by
-      #  forwards backwards (computes the alpha_tk et beta_tk)
-      stat$EStep(param)
+      # EM Initializaiton step
+      # Initialization of the Markov chain parameters, the regression coefficients, and the variance(s)
+      variance_type <- match.arg(variance_type)
+      param <- ParamMHMMR$new(mData = mData, K = K, p = p, variance_type = variance_type)
+      param$initParam(nb_good_try + 1)
 
-      # M step
-      param$MStep(stat)
+      iter <- 0
+      prev_loglik <- -Inf
+      converged <- FALSE
+      top <- 0
 
-      # End of an EM iteration
+      stat <- StatMHMMR$new(paramMHMMR = param)
 
-      iter <-  iter + 1
+      while ((iter <= max_iter) && !converged) {
+        # E step : calculate the tau_tk (p(Zt=k|y1...ym;theta)) and xi t_kl (and the log-likelihood) by
+        #  forwards backwards (computes the alpha_tk et beta_tk)
+        stat$EStep(param)
 
-      # Test of convergence
-      lambda <- 1e-5 # If a bayesian prior on the beta's
-      stat$loglik <- stat$loglik + log(lambda)
+        # M step
+        param$MStep(stat)
 
-      if (verbose) {
-        cat(paste0("EM: Iteration : ", iter, " || log-likelihood : ", stat$loglik, "\n"))
+        # End of an EM iteration
+
+        iter <-  iter + 1
+
+        # Test of convergence
+        lambda <- 1e-5 # If a bayesian prior on the beta's
+        stat$loglik <- stat$loglik + log(lambda)
+
+        if (verbose) {
+          cat(paste0("EM: Iteration : ", iter, " || log-likelihood : ", stat$loglik, "\n"))
+        }
+
+        if ((prev_loglik - stat$loglik) > 1e-4) {
+          top <- top + 1
+          if (top == 10) {
+            warning(paste0("EM log-likelihood is decreasing from ", prev_loglik, "to ", stat$loglik, " !"))
+          }
+        }
+
+        converged <- (abs(stat$loglik - prev_loglik) / abs(prev_loglik) < threshold)
+        if (is.na(converged)) {
+          converged <- FALSE
+        } # Basically for the first iteration when prev_loglik is Inf
+
+        prev_loglik <- stat$loglik
+        stat$stored_loglik[iter] <- stat$loglik
+
+      } # End of the EM loop
+
+      if (n_tries > 1 && verbose) {
+        cat(paste0("Max value of the log-likelihood: ", stat$loglik, "\n\n"))
       }
 
-      if ((prev_loglik - stat$loglik) > 1e-4) {
-        top <- top + 1
-        if (top == 10) {
-          warning(paste0("EM log-likelihood is decreasing from ", prev_loglik, "to ", stat$loglik, " !"))
+      if (length(param$beta) != 0) {
+        nb_good_try <- nb_good_try + 1
+        total_nb_try <- 0
+
+        if (stat$loglik > best_loglik) {
+          statSolution <- stat$copy()
+          paramSolution <- param$copy()
+
+          best_loglik <- stat$loglik
         }
       }
 
-      converged <- (abs(stat$loglik - prev_loglik) / abs(prev_loglik) < threshold)
-      if (is.na(converged)) {
-        converged <- FALSE
-      } # Basically for the first iteration when prev_loglik is Inf
+      if (total_nb_try > 500) {
+        stop(paste("can't obtain the requested number of classes"))
+      }
 
-      prev_loglik <- stat$loglik
-      stat$stored_loglik[iter] <- stat$loglik
-
-    } # End of the EM loop
+    }
 
     if (n_tries > 1 && verbose) {
-      cat(paste0("Max value of the log-likelihood: ", stat$loglik, "\n\n"))
+      cat(paste0("Best value of the log-likelihood: ", statSolution$loglik, "\n"))
     }
 
-    if (length(param$beta) != 0) {
-      nb_good_try <- nb_good_try + 1
-      total_nb_try <- 0
+    # Smoothing state sequences : argmax(smoothing probs), and corresponding binary allocations partition
+    statSolution$MAP()
 
-      if (stat$loglik > best_loglik) {
-        statSolution <- stat$copy()
-        paramSolution <- param$copy()
+    # Finish the computation of statistics
+    statSolution$computeStats(paramSolution)
 
-        best_loglik <- stat$loglik
-      }
-    }
-
-    if (total_nb_try > 500) {
-      stop(paste("can't obtain the requested number of classes"))
-    }
-
-  }
-
-  if (n_tries > 1 && verbose) {
-    cat(paste0("Best value of the log-likelihood: ", statSolution$loglik, "\n"))
-  }
-
-  # Smoothing state sequences : argmax(smoothing probs), and corresponding binary allocations partition
-  statSolution$MAP()
-
-  # Finish the computation of statistics
-  statSolution$computeStats(paramSolution)
-
-  return(ModelMHMMR(param = paramSolution, stat = statSolution))
+    return(ModelMHMMR(param = paramSolution, stat = statSolution))
 }
