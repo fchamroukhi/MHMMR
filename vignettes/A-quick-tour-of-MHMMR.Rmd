@@ -31,7 +31,11 @@ library(MHMMR)
 
 # Introduction
 
-**MHMMR** is a R package for segmentation. It provides functions for parameter estimation via the EM algorithm. This document gives a quick tour of **MHMMR** (version `r packageVersion("MHMMR")`) functionalities. It was written in R Markdown, using the [knitr](https://cran.r-project.org/package=knitr) package for production. 
+**MHMMR**: Flexible and user-friendly probabilistic joint segmentation of 
+multivariate time series (or multivariate structured longitudinal data) with regime changes 
+by a multiple regression model governed by a hidden Markov process, fitted by 
+the EM (Baum-Welch) algorithm.
+This document gives a quick tour of **MHMMR** (version `r packageVersion("MHMMR")`) functionalities. It was written in R Markdown, using the [knitr](https://cran.r-project.org/package=knitr) package for production. 
 See `help(package="MHMMR")` for further details and references provided by `citation("MHMMR")`.
 
 # Load data
