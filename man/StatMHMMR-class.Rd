@@ -7,6 +7,8 @@
 \title{A Reference Class which contains statistics of a MHMMR model.}
 \description{
 StatMHMMR contains all the statistics associated to a \link[=ParamMHMMR]{MHMMR} model.
+It mainly includes the E-Step of the EM algorithm calculating the posterior distribution of the hidden variables (ie the smoothing probabilities),
+as well as the calculation of the prediction and filtering probabilities, the log-likelhood at each step of the algorithm and the obtained values of model selection criteria..
 }
 \section{Fields}{
 
@@ -100,12 +102,12 @@ provided by the object \code{paramMHMMR} of class \link{ParamMHMMR}
 (prior and posterior probabilities).}
 
 \item{\code{MAP()}}{MAP calculates values of the fields \code{z_ik} and \code{klas}
-      by applying the Maximum A Posteriori Bayes allocation rule.
+by applying the Maximum A Posteriori Bayes allocation rule.
 
-      \eqn{z\_ik = 1 \ \textrm{if} \ z\_ik = \textrm{arg} \
-      \textrm{max}_{s} \ P(z_{i} = s | \boldsymbol{Y})  = tau\_tk;\ 0 \
-      \textrm{otherwise}}{z_ik = 1 if z_ik = arg max_s P(z_{i} = s | Y)  =
-      tau_tk; 0 otherwise}}
+\eqn{z\_ik = 1 \ \textrm{if} \ z\_ik = \textrm{arg} \
+\textrm{max}_{s} \ P(z_{i} = s | \boldsymbol{Y})  = tau\_tk;\ 0 \
+\textrm{otherwise}}{z_ik = 1 if z_ik = arg max_s P(z_{i} = s | Y)  =
+tau_tk; 0 otherwise}}
 }}
 
 \seealso{
