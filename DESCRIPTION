@@ -9,9 +9,11 @@ Authors@R: c(person("Faicel", "Chamroukhi", role = c("aut"),
     email = "marius.bartcus@gmail.com"),
     person("Florian", "Lecocq", role = c("aut", "cre"),
     email = "florian.lecocq@outlook.com"))
-Description: Flexible and user-friendly probabilistic joint segmentation of time series with 
-    regime changes by a multiple regression model governed by a hidden Markov process, fitted 
-    by the Baum-Welch (EM) algorithm. See also the packages 'HMMR' and 'MRHLP'.
+Description: Flexible and user-friendly probabilistic joint segmentation of 
+    time series with regime changes by a multiple regression model governed by 
+    a hidden Markov process, fitted by the Baum-Welch (EM) algorithm. See also 
+    the packages 'HMMR' and 'MRHLP'.
+URL: https://github.com/fchamroukhi/MHMMR
 License: GPL (>= 3)
 Depends: 
     R (>= 2.10)
