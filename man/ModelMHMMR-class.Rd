@@ -37,6 +37,9 @@ associated to the MHMMR model.}
       \item \code{"regressors" = } Polynomial regression components
         (fields \code{regressors} and \code{tau_tk} of class
         \link{StatMHMMR}).
+      \item \code{"loglikelihood" = } Value of the log-likelihood for
+        each iteration (field \code{stored_loglik} of class
+        \link{StatMHMMR}).
     }
   }
   \item{\code{\dots}}{Other graphics parameters.}

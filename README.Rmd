@@ -12,10 +12,11 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-"
 )
 ```
-## Overview
 
 <!-- badges: start -->
 <!-- badges: end -->
+
+## Overview
 
 Multiple Hidden Markov Model Regression (HMMR) for the **segmentation** of multivariate time series with regime changes.
 
