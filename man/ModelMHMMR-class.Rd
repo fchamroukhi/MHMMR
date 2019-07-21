@@ -21,7 +21,8 @@ associated to the MHMMR model.}
 \section{Methods}{
 
 \describe{
-\item{\code{plot(what = c("predicted", "filtered", "smoothed", "regressors"), ...)}}{Plot method.
+\item{\code{plot(what = c("predicted", "filtered", "smoothed", "regressors",
+  "loglikelihood"), ...)}}{Plot method.
 \describe{
   \item{\code{what}}{The type of graph requested:
     \itemize{
@@ -53,6 +54,25 @@ By default, all the above graphs are produced.}
 }}
 }}
 
+\examples{
+data(toydataset)
+
+mhmmr <- emMHMMR(toydataset$x, toydataset[,c("y1", "y2", "y3")],
+                 K = 5, p = 1, verbose = TRUE)
+
+# mhmmr is a ModelMHMMR object. It contains some methods such as 'summary' and 'plot'
+mhmmr$summary()
+mhmmr$plot()
+
+# mhmmr has also two fields, stat and param which are reference classes as well
+
+# Log-likelihood:
+mhmmr$stat$loglik
+
+# Parameters of the polynomial regressions:
+mhmmr$param$beta
+
+}
 \seealso{
 \link{ParamMHMMR}, \link{StatMHMMR}
 }
