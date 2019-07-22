@@ -16,13 +16,17 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-## Overview
+# Overview
 
-Multiple Hidden Markov Model Regression (HMMR) for the **segmentation** of multivariate time series with regime changes.
+Multiple Hidden Markov Model Regression (HMMR) for the **segmentation** of
+multivariate time series with regime changes.
 
-The model assumes that the time series is governed by a sequence of hidden discrete regimes/states, where each regime/state has multivariate Gaussian regressors emission densities. The model parameters are estimated by MLE via the EM algorithm.
+The model assumes that the time series is governed by a sequence of hidden 
+discrete regimes/states, where each regime/state has multivariate Gaussian 
+regressors emission densities. The model parameters are estimated by MLE via 
+the EM algorithm.
 
-## Installation
+# Installation
 
 You can install the development version of MHMMR from [GitHub](https://github.com/) with:
 
@@ -46,15 +50,18 @@ Use the following command to display vignettes:
 browseVignettes("MHMMR")
 ```
 
-## Usage
+# Usage
 
 ```{r, message = FALSE}
 library(MHMMR)
+```
 
+```{r, message = FALSE}
+# Application to a simulated data set
 data("toydataset")
 
 K <- 5 # Number of regimes (states)
-p <- 3 # Dimension of beta (order of the polynomial regressors)
+p <- 1 # Dimension of beta (order of the polynomial regressors)
 variance_type <- "heteroskedastic" # "heteroskedastic" or "homoskedastic" model
 
 n_tries <- 1
@@ -67,5 +74,51 @@ mhmmr <- emMHMMR(toydataset$x, toydataset[, c("y1", "y2", "y3")],
 
 mhmmr$summary()
 
-mhmmr$plot()
+mhmmr$plot(what = c("smoothed", "regressors", "loglikelihood"))
+```
+
+```{r, message = FALSE}
+# Application to a real data set (human activity recognition data)
+data("realdataset")
+
+K <- 5 # Number of regimes (states)
+p <- 3 # Dimension of beta (order of the polynomial regressors)
+variance_type <- "heteroskedastic" # "heteroskedastic" or "homoskedastic" model
+
+n_tries <- 1
+max_iter <- 1500
+threshold <- 1e-6
+verbose <- TRUE
+
+mhmmr <- emMHMMR(realdataset$x, realdataset[, c("y1", "y2", "y3")],
+                 K, p, variance_type, n_tries, max_iter, threshold, verbose)
+
+mhmmr$summary()
+
+mhmmr$plot(what = c("smoothed", "regressors", "loglikelihood"))
+```
+
+# Model selection
+
+In this package, it is possible to select models based on information criteria 
+such as **BIC**, **AIC** and **ICL**.
+
+The selection can be done for the two following parameters:
+
+ * **K**: The number of regimes;
+ * **p**: The order of the polynomial regression.
+ 
+Let's select a MHMMR model for the following multivariate time series **Y**:
+
+```{r}
+data("toydataset")
+x <- toydataset$x
+y <- toydataset[, c("y1", "y2", "y3")]
+matplot(x, y, type = "l", xlab = "x", ylab = "Y", lty = 1)
+```
+
+```{r, message = FALSE}
+selectedmhmmr <- selectMHMMR(X = x, Y = y, Kmin = 2, Kmax = 6, pmin = 0, pmax = 3)
+
+selectedmhmmr$plot(what = "smoothed")
 ```

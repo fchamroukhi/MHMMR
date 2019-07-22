@@ -34,10 +34,10 @@ library(MHMMR)
 In this package, it is possible to select models based on information criteria 
 such as **BIC**, **AIC** and **ICL**.
 
-The selection is done on two parameters which are:
+The selection can be done for the two following parameters:
 
  * $K$: The number of regimes;
- * $p$: The order of the polyniomial regression.
+ * $p$: The order of the polynomial regression.
 
 # Data
 
