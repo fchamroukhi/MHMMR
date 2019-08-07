@@ -46,9 +46,9 @@ model having the highest value of the chosen selection criterion is then
 selected.
 }
 \examples{
-data(multivtoydataset)
-x <- multivtoydataset$x
-y <- multivtoydataset[, c("y1", "y2", "y3")]
+data(toydataset)
+x <- toydataset$x
+y <- toydataset[, c("y1", "y2", "y3")]
 
 selectedmhmmr <- selectMHMMR(X = x, Y = y, Kmin = 2, Kmax = 6,
                              pmin = 0, pmax = 2)

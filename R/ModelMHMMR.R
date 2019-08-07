@@ -10,10 +10,11 @@
 #' @export
 #'
 #' @examples
-#' data(multivtoydataset)
+#' data(toydataset)
+#' x <- toydataset$x
+#' y <- toydataset[,c("y1", "y2", "y3")]
 #'
-#' mhmmr <- emMHMMR(multivtoydataset$x, multivtoydataset[,c("y1", "y2", "y3")],
-#'                  K = 5, p = 1, verbose = TRUE)
+#' mhmmr <- emMHMMR(X = x, Y = y, K = 5, p = 1, verbose = TRUE)
 #'
 #' # mhmmr is a ModelMHMMR object. It contains some methods such as 'summary' and 'plot'
 #' mhmmr$summary()
@@ -199,7 +200,7 @@ ModelMHMMR <- setRefClass(
 
       for (k in 1:param$K) {
         cat(txt)
-        cat("\nRegime ", k, " (K = ", k, "):\n", sep = "")
+        cat("\nRegime ", k, " (k = ", k, "):\n", sep = "")
 
         cat("\nRegression coefficients:\n\n")
         if (param$p > 0) {

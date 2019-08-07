@@ -56,9 +56,11 @@ browseVignettes("MHMMR")
 library(MHMMR)
 ```
 
-```{r, message = FALSE}
+```{r, echo = TRUE}
 # Application to a simulated data set
 data("toydataset")
+x <- toydataset$x
+y <- toydataset[, c("y1", "y2", "y3")]
 
 K <- 5 # Number of regimes (states)
 p <- 1 # Dimension of beta (order of the polynomial regressors)
@@ -69,17 +71,19 @@ max_iter <- 1500
 threshold <- 1e-6
 verbose <- TRUE
 
-mhmmr <- emMHMMR(toydataset$x, toydataset[, c("y1", "y2", "y3")],
-                 K, p, variance_type, n_tries, max_iter, threshold, verbose)
+mhmmr <- emMHMMR(X = x, Y = y, K, p, variance_type, n_tries, 
+                 max_iter, threshold, verbose)
 
 mhmmr$summary()
 
 mhmmr$plot(what = c("smoothed", "regressors", "loglikelihood"))
 ```
 
-```{r, message = FALSE}
+```{r, echo = TRUE}
 # Application to a real data set (human activity recognition data)
 data("realdataset")
+x <- realdataset$x
+y <- realdataset[, c("y1", "y2", "y3")]
 
 K <- 5 # Number of regimes (states)
 p <- 3 # Dimension of beta (order of the polynomial regressors)
@@ -90,8 +94,8 @@ max_iter <- 1500
 threshold <- 1e-6
 verbose <- TRUE
 
-mhmmr <- emMHMMR(realdataset$x, realdataset[, c("y1", "y2", "y3")],
-                 K, p, variance_type, n_tries, max_iter, threshold, verbose)
+mhmmr <- emMHMMR(X = x, Y = y, K, p, variance_type, n_tries, 
+                 max_iter, threshold, verbose)
 
 mhmmr$summary()
 

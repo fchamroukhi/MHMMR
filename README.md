@@ -50,6 +50,8 @@ library(MHMMR)
 ``` r
 # Application to a simulated data set
 data("toydataset")
+x <- toydataset$x
+y <- toydataset[, c("y1", "y2", "y3")]
 
 K <- 5 # Number of regimes (states)
 p <- 1 # Dimension of beta (order of the polynomial regressors)
@@ -60,14 +62,14 @@ max_iter <- 1500
 threshold <- 1e-6
 verbose <- TRUE
 
-mhmmr <- emMHMMR(toydataset$x, toydataset[, c("y1", "y2", "y3")],
-                 K, p, variance_type, n_tries, max_iter, threshold, verbose)
-#> EM: Iteration : 1 || log-likelihood : -4539.37845473736
-#> EM: Iteration : 2 || log-likelihood : -3075.7862970485
-#> EM: Iteration : 3 || log-likelihood : -2904.71126233611
-#> EM: Iteration : 4 || log-likelihood : -2883.23456594806
-#> EM: Iteration : 5 || log-likelihood : -2883.12446634454
-#> EM: Iteration : 6 || log-likelihood : -2883.12436399888
+mhmmr <- emMHMMR(X = x, Y = y, K, p, variance_type, n_tries, 
+                 max_iter, threshold, verbose)
+#> EM - MHMMR: Iteration: 1 | log-likelihood: -4539.37845473736
+#> EM - MHMMR: Iteration: 2 | log-likelihood: -3075.7862970485
+#> EM - MHMMR: Iteration: 3 | log-likelihood: -2904.71126233611
+#> EM - MHMMR: Iteration: 4 | log-likelihood: -2883.23456594806
+#> EM - MHMMR: Iteration: 5 | log-likelihood: -2883.12446634454
+#> EM - MHMMR: Iteration: 6 | log-likelihood: -2883.12436399888
 
 mhmmr$summary()
 #> ----------------------
@@ -85,7 +87,7 @@ mhmmr$summary()
 #> 
 #> 
 #> ------------------
-#> Regime 1 (K = 1):
+#> Regime 1 (k = 1):
 #> 
 #> Regression coefficients:
 #> 
@@ -99,7 +101,7 @@ mhmmr$summary()
 #>  0.12765794  0.87145062 -0.05213162
 #>  0.05537134 -0.05213162  0.87886166
 #> ------------------
-#> Regime 2 (K = 2):
+#> Regime 2 (k = 2):
 #> 
 #> Regression coefficients:
 #> 
@@ -113,7 +115,7 @@ mhmmr$summary()
 #>  -0.1824079  1.05317924 0.01419686
 #>   0.1267597  0.01419686 0.76030310
 #> ------------------
-#> Regime 3 (K = 3):
+#> Regime 3 (k = 3):
 #> 
 #> Regression coefficients:
 #> 
@@ -127,7 +129,7 @@ mhmmr$summary()
 #>  -0.05491451  1.18921808  0.01510035
 #>  -0.01930098  0.01510035  1.00352482
 #> ------------------
-#> Regime 4 (K = 4):
+#> Regime 4 (k = 4):
 #> 
 #> Regression coefficients:
 #> 
@@ -141,7 +143,7 @@ mhmmr$summary()
 #>  -0.03249118  1.12088583 -0.07881351
 #>  -0.03411075 -0.07881351  0.86061127
 #> ------------------
-#> Regime 5 (K = 5):
+#> Regime 5 (k = 5):
 #> 
 #> Regression coefficients:
 #> 
@@ -163,6 +165,8 @@ mhmmr$plot(what = c("smoothed", "regressors", "loglikelihood"))
 ``` r
 # Application to a real data set (human activity recognition data)
 data("realdataset")
+x <- realdataset$x
+y <- realdataset[, c("y1", "y2", "y3")]
 
 K <- 5 # Number of regimes (states)
 p <- 3 # Dimension of beta (order of the polynomial regressors)
@@ -173,21 +177,21 @@ max_iter <- 1500
 threshold <- 1e-6
 verbose <- TRUE
 
-mhmmr <- emMHMMR(realdataset$x, realdataset[, c("y1", "y2", "y3")],
-                 K, p, variance_type, n_tries, max_iter, threshold, verbose)
-#> EM: Iteration : 1 || log-likelihood : 817.206309249687
-#> EM: Iteration : 2 || log-likelihood : 1793.49320726452
-#> EM: Iteration : 3 || log-likelihood : 1908.47251424374
-#> EM: Iteration : 4 || log-likelihood : 2006.7976746047
-#> EM: Iteration : 5 || log-likelihood : 3724.91911814713
-#> EM: Iteration : 6 || log-likelihood : 3846.02584774854
-#> EM: Iteration : 7 || log-likelihood : 3957.04953794437
-#> EM: Iteration : 8 || log-likelihood : 4008.60804596975
-#> EM: Iteration : 9 || log-likelihood : 4011.09964067314
-#> EM: Iteration : 10 || log-likelihood : 4014.35810165377
-#> EM: Iteration : 11 || log-likelihood : 4026.38632031497
-#> EM: Iteration : 12 || log-likelihood : 4027.13758668835
-#> EM: Iteration : 13 || log-likelihood : 4027.13639613206
+mhmmr <- emMHMMR(X = x, Y = y, K, p, variance_type, n_tries, 
+                 max_iter, threshold, verbose)
+#> EM - MHMMR: Iteration: 1 | log-likelihood: 817.206309249687
+#> EM - MHMMR: Iteration: 2 | log-likelihood: 1793.49320726452
+#> EM - MHMMR: Iteration: 3 | log-likelihood: 1908.47251424374
+#> EM - MHMMR: Iteration: 4 | log-likelihood: 2006.7976746047
+#> EM - MHMMR: Iteration: 5 | log-likelihood: 3724.91911814713
+#> EM - MHMMR: Iteration: 6 | log-likelihood: 3846.02584774854
+#> EM - MHMMR: Iteration: 7 | log-likelihood: 3957.04953794437
+#> EM - MHMMR: Iteration: 8 | log-likelihood: 4008.60804596975
+#> EM - MHMMR: Iteration: 9 | log-likelihood: 4011.09964067314
+#> EM - MHMMR: Iteration: 10 | log-likelihood: 4014.35810165377
+#> EM - MHMMR: Iteration: 11 | log-likelihood: 4026.38632031497
+#> EM - MHMMR: Iteration: 12 | log-likelihood: 4027.13758668835
+#> EM - MHMMR: Iteration: 13 | log-likelihood: 4027.13639613206
 
 mhmmr$summary()
 #> ----------------------
@@ -205,7 +209,7 @@ mhmmr$summary()
 #> 
 #> 
 #> ------------------
-#> Regime 1 (K = 1):
+#> Regime 1 (k = 1):
 #> 
 #> Regression coefficients:
 #> 
@@ -221,7 +225,7 @@ mhmmr$summary()
 #>  -0.01938101  0.109202105 -0.001402791
 #>  -0.01881085 -0.001402791  0.026461790
 #> ------------------
-#> Regime 2 (K = 2):
+#> Regime 2 (k = 2):
 #> 
 #> Regression coefficients:
 #> 
@@ -237,7 +241,7 @@ mhmmr$summary()
 #>  -0.03271648  0.032475350 0.008585402
 #>   0.01362677  0.008585402 0.041960228
 #> ------------------
-#> Regime 3 (K = 3):
+#> Regime 3 (k = 3):
 #> 
 #> Regression coefficients:
 #> 
@@ -253,7 +257,7 @@ mhmmr$summary()
 #>  -0.0002523608  0.0006584694  0.0002391577
 #>  -0.0001992900  0.0002391577  0.0014228769
 #> ------------------
-#> Regime 4 (K = 4):
+#> Regime 4 (k = 4):
 #> 
 #> Regression coefficients:
 #> 
@@ -269,7 +273,7 @@ mhmmr$summary()
 #>  -0.07328139  0.17055704  0.45218611
 #>  -0.08824736  0.45218611  1.76616982
 #> ------------------
-#> Regime 5 (K = 5):
+#> Regime 5 (k = 5):
 #> 
 #> Regression coefficients:
 #> 
